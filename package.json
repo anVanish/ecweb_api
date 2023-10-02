@@ -4,11 +4,16 @@
   "description": "api for ecommerce website",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --inspect index.js"
   },
   "author": "vanish",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "mogoose": "^0.0.1-security",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.1"
   }
 }
