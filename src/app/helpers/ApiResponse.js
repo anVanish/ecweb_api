@@ -6,6 +6,11 @@ class ApiResponse{
         this.errorCode = ''
         this.data = {}
     }
+
+    setError(message, errorCode){
+        this.message = message
+        this.errorCode = errorCode
+    }
 }
 
 module.exports = ApiResponse
