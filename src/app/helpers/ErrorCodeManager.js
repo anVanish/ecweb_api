@@ -19,7 +19,11 @@ class ErrorCodeManager{
     static get EMAIL_NOT_VERIFIED(){return "EMAIL_NOT_VERIFIED"}
     static get INCORRECT_PASSWORD(){return "INCORRECT_PASSWORD"}
     
+    //authenticate
+    static get UNAUTHORIZED(){return "UNAUTHORIZED"}
 
+
+    //database
     static get DATABASE_ERROR(){return "DATABASE_ERROR"}
 }
 

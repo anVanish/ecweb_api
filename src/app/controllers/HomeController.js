@@ -2,7 +2,10 @@
 class HomeController{
     //GET /
     home(req, res){
-        res.json("Hello, world!")
+        if (req.token)
+            res.json(req.token)
+        else
+            res.json("Welcome")
     }
 }
 

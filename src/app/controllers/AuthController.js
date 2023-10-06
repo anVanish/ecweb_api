@@ -4,6 +4,7 @@ const InputValidator = require('../helpers/InputValidator')
 const Users = require('../models/Users')
 const MailService = require('../helpers/MailService')
 const ErrorHandling = require('../helpers/ErrorHandling')
+const TokenService = require('../helpers/TokenService')
 
 class AuthController{
     
@@ -19,25 +20,25 @@ class AuthController{
         }
 
         Users.findOne({ email })
-        .then((foundUser) => {
-            if (foundUser) {
-                apiResponse.setError('Email already exists', ErrorCodeManager.EMAIL_ALREADY_EXISTS);
-                throw apiResponse;
-            }
-            const user = new Users({ email, password });
-            return user.save();
-        })
-        .then((savedUser) => {
-            apiResponse.success = true;
-            const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${savedUser.verify_data.code}&id=${savedUser._id}`;
-            return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
-        })
-        .then(() => {
-            res.json(apiResponse);
-        })
-        .catch((error) => {
-            ErrorHandling.handleErrorResponse(error, res);
-        });
+            .then((foundUser) => {
+                if (foundUser) {
+                    apiResponse.setError('Email already exists', ErrorCodeManager.EMAIL_ALREADY_EXISTS);
+                    throw apiResponse;
+                }
+                const user = new Users({ email, password });
+                return user.save();
+            })
+            .then((savedUser) => {
+                apiResponse.success = true;
+                const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${savedUser.verify_data.code}&id=${savedUser._id}`;
+                return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
+            })
+            .then(() => {
+                res.json(apiResponse);
+            })
+            .catch((error) => {
+                ErrorHandling.handleErrorResponse(error, res);
+            });
     }
 
     //POST /api/auth/login
@@ -52,26 +53,29 @@ class AuthController{
         }
         
         Users.findOne({email})
-        .then((user) => {
-            if (!user){
-                apiResponse.setError('Email not found', ErrorCodeManager.EMAIL_NOT_FOUND)
-                throw apiResponse
-            }
-            if (!user.verify_data.is_verified) {
-                apiResponse.setError('Email not verified', ErrorCodeManager.EMAIL_NOT_VERIFIED)
-                throw apiResponse
-            }
-            if (user.password !== password) {
-                apiResponse.setError('Icorrect Password', ErrorCodeManager.INCORRECT_PASSWORD)
-                throw apiResponse
-            }
+            .then((user) => {
+                if (!user){
+                    apiResponse.setError('Email not found', ErrorCodeManager.EMAIL_NOT_FOUND)
+                    throw apiResponse
+                }
+                if (!user.verify_data.is_verified) {
+                    apiResponse.setError('Email not verified', ErrorCodeManager.EMAIL_NOT_VERIFIED)
+                    throw apiResponse
+                }
+                if (user.password !== password) {
+                    apiResponse.setError('Icorrect Password', ErrorCodeManager.INCORRECT_PASSWORD)
+                    throw apiResponse
+                }
+                
+                const accessToken = new TokenService().generateAccessToken(user._id)
+                apiResponse.data.accessToken = accessToken
+                apiResponse.success = true
 
-            apiResponse.success = true
-            res.json(apiResponse)
-        })
-        .catch((error) => {
-            ErrorHandling.handleErrorResponse(error, res);
-        })
+                res.json(apiResponse)
+            })
+            .catch((error) => {
+                ErrorHandling.handleErrorResponse(error, res);
+            })
     }
 
     //POST /api/auth/forgot-password
