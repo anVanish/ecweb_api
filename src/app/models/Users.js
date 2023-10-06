@@ -6,7 +6,6 @@ const crypto = require('crypto')
 const Users = new Schema({
     _id: {type: ObjectId, default: new ObjectId()},
     name: {type: String},
-    username: {type: String, default: function(){ return this.email.split('@')[0]}},
     email: {type: String},
     password: {type: String},
     verify_data: {
