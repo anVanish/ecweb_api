@@ -8,8 +8,8 @@ class TokenService{
     constructor(){
         this.secretKey = process.env.SECRET_KEY
     }
-    generateAccessToken(_id){
-        return jwt.sign({_id}, this.secretKey, {expiresIn: '7d'})
+    generateAccessToken(data, expiresIn = '7d'){
+        return jwt.sign({data}, this.secretKey, {expiresIn})
     }
 
     decodeAccessToken(token){

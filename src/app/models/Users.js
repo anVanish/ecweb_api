@@ -8,11 +8,7 @@ const Users = new Schema({
     name: {type: String},
     email: {type: String},
     password: {type: String},
-    verify_data: {
-        is_verified: {type: Boolean, default: false},
-        code: {type: String, default: crypto.randomBytes(24).toString('hex')},
-        expired_date: {type: Date, default: new Date().setDate(new Date().getDate() + 1)}
-    },
+    is_verified: {type: Boolean, default: false},
     phone: {type: String},
     gender: {type: String},
     birthday: {type: Date},

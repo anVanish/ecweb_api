@@ -1,4 +1,5 @@
 const ApiResponse = require('./ApiResponse')
+const ErrorCodeManager = require('./ErrorCodeManager')
 
 class ErrorHandling{
     static handleErrorResponse(error, res){
@@ -7,7 +8,7 @@ class ErrorHandling{
             apiResponse.setError(error.message, error.errorCode)
         } else {
             console.error(error)
-            apiResponse.setError('Database Error', ErrorCodeManager.DATABASE_ERROR);
+            apiResponse.setError('Database Error', ErrorCodeManager.UNKNOWN_ERROR);
         }
         res.json(apiResponse)
     }

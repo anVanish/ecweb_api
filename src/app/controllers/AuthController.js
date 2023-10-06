@@ -5,6 +5,7 @@ const Users = require('../models/Users')
 const MailService = require('../helpers/MailService')
 const ErrorHandling = require('../helpers/ErrorHandling')
 const TokenService = require('../helpers/TokenService')
+const crypto = require('crypto')
 
 class AuthController{
     
@@ -29,11 +30,13 @@ class AuthController{
                 return user.save();
             })
             .then((savedUser) => {
-                apiResponse.success = true;
-                const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${savedUser.verify_data.code}&id=${savedUser._id}`;
+                const code = new TokenService().generateAccessToken(savedUser._id, '1d')
+                const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${code}&email=${savedUser.email}`;
                 return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
             })
             .then(() => {
+                apiResponse.success = true;
+                apiResponse.message = 'Mail sent'
                 res.json(apiResponse);
             })
             .catch((error) => {
@@ -58,7 +61,7 @@ class AuthController{
                     apiResponse.setError('Email not found', ErrorCodeManager.EMAIL_NOT_FOUND)
                     throw apiResponse
                 }
-                if (!user.verify_data.is_verified) {
+                if (!user.is_verified) {
                     apiResponse.setError('Email not verified', ErrorCodeManager.EMAIL_NOT_VERIFIED)
                     throw apiResponse
                 }
@@ -78,37 +81,111 @@ class AuthController{
             })
     }
 
-    //POST /api/auth/forgot-password
+    //GET /api/auth/forgot-password
     forgotPassword(req, res){
-        res.json("forgot password")
-    }
-
-    //POST /api/auth/verify-email
-    verifyEmail(req, res){
         const apiResponse = new ApiResponse()
-        const code = req.query.code
-        const _id = req.query.id
+        const email = req.query.email
 
-        if (!code || !_id || code.trim() === '' || _id.trim() === ''){
-            apiResponse.setError('Code or Id is required', ErrorCodeManager.NOT_FOUND_VERIFY_INFO)
+        if (!email){
+            apiResponse.setError('Missing Email', ErrorCodeManager.MISSING_EMAIL)
+            return res.json(apiResponse)
+        }
+        if (!InputValidator.validateEmail(email)){
+            apiResponse.setError('Invalid Email', ErrorCodeManager.INVALID_EMAIL)
             return res.json(apiResponse)
         }
 
-        Users.findOne({_id})
+        Users.findOne({email})
             .then((user) => {
                 if (!user){
-                    apiResponse.setError('User not found', ErrorCodeManager.USER_NOT_FOUND);
-                    throw apiResponse;
-                }
-                if (user.verify_data.code !== code){
-                    apiResponse.setError('Verify code is not found', ErrorCodeManager.INCORRECT_CODE)
+                    apiResponse.setError('Email not found', ErrorCodeManager.EMAIL_NOT_FOUND)
                     throw apiResponse
                 }
-                if (user.verify_data.expired_date < new Date()) {
-                    apiResponse.setError('Verify code is expired', ErrorCodeManager.CODE_EXPIRED)
+                if (!user.is_verified){
+                    apiResponse.setError('Email not verified', ErrorCodeManager.EMAIL_NOT_VERIFIED)
                     throw apiResponse
                 }
-                user.verify_data.is_verified = true
+                //generate resetCode and send mail
+                const resetCode = new TokenService().generateAccessToken(user._id, '30m')
+                const link = `Your reset password code is ${resetCode}`;
+                return MailService.sendMail(user.email, 'Reset your password', link);
+            })
+            .then(() => {
+                apiResponse.success = true
+                apiResponse.message = 'Mail sent'
+                res.json(apiResponse)
+            })
+            .catch((error) => {
+                ErrorHandling.handleErrorResponse(error, res)
+            })
+    }
+
+    //POST /api/auth/forgot-password
+    resetPassword(req, res){
+        const apiResponse = new ApiResponse()
+        const {password, confirmPassword, resetCode} = req.body
+
+        if (!password){
+            apiResponse.setError('Password is required', ErrorCodeManager.MISSING_PASSWORD)
+            return res.json(apiResponse)
+        }
+        if (password !== confirmPassword){
+            apiResponse.setError('Confirmed Password Incorrect', ErrorCodeManager.PASSWORD_CONFIRM_INCORRECT)
+            return res.json(apiResponse)
+        }
+        if (!resetCode){
+            apiResponse.setError('Reset Code is required', ErrorCodeManager.MISSING_RESET_CODE)
+            return res.json(apiResponse)
+        }
+
+        const decodedData = new TokenService().decodeAccessToken(resetCode)
+        if (!decodedData){
+            apiResponse.setError('Invalid Reset Code', ErrorCodeManager.INVALID_RESET_CODE)
+            return res.json(apiResponse)
+        }
+
+        Users.findOneAndUpdate({_id: decodedData.data}, {$set: {password}}, {new: true})
+            .then((user) => {
+                if (!user){
+                    apiResponse.setError('User Not Found', ErrorCodeManager.USER_NOT_FOUND)
+                    throw apiResponse
+                }
+                apiResponse.success = true
+                res.json(apiResponse)
+            })
+            .catch((error) => {
+                ErrorHandling.handleErrorResponse(error, res)
+            })
+    }
+
+    //GET /api/auth/verify-email
+    verifyEmail(req, res){
+        const apiResponse = new ApiResponse()
+        const code = req.query.code
+
+        if (!code) { 
+            apiResponse.setError('Code is required', ErrorCodeManager.MISSING_VERIFY_CODE)
+            return res.json(apiResponse)
+        }
+
+        const decodedData = new TokenService().decodeAccessToken(code)
+        if (!decodedData){
+            apiResponse.setError('Code is invalid or expired', ErrorCodeManager.INVALID_CODE)
+            return res.json(apiResponse)
+        }
+
+        Users.findOne({_id: decodedData.data})
+            .then((user) => {
+                if (!user){
+                    apiResponse.setError('Not found User', ErrorCodeManager.USER_NOT_FOUND)
+                    throw apiResponse
+                }
+                if (user.is_verified){
+                    apiResponse.setError('Email already verify', ErrorCodeManager.EMAIL_ALREADY_VERIFY)
+                    throw apiResponse
+                }
+
+                user.is_verified = true
                 return user.save()
             })
             .then(() => {
@@ -116,8 +193,33 @@ class AuthController{
                 res.json(apiResponse)
             })
             .catch((error) => {
-                ErrorHandling.handleErrorResponse(error, res);
+                ErrorHandling.handleErrorResponse(error, res)
             })
+        
+        // Users.findOne({_id})
+        //     .then((user) => {
+        //         if (!user){
+        //             apiResponse.setError('User not found', ErrorCodeManager.USER_NOT_FOUND);
+        //             throw apiResponse;
+        //         }
+        //         if (user.verify_data.code !== code){
+        //             apiResponse.setError('Verify code is not found', ErrorCodeManager.INCORRECT_CODE)
+        //             throw apiResponse
+        //         }
+        //         if (user.verify_data.expired_date < new Date()) {
+        //             apiResponse.setError('Verify code is expired', ErrorCodeManager.CODE_EXPIRED)
+        //             throw apiResponse
+        //         }
+        //         user.verify_data.is_verified = true
+        //         return user.save()
+        //     })
+        //     .then(() => {
+        //         apiResponse.success = true
+        //         res.json(apiResponse)
+        //     })
+        //     .catch((error) => {
+        //         ErrorHandling.handleErrorResponse(error, res);
+        //     })
     }
 }
 
