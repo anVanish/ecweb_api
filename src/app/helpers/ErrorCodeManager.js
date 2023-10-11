@@ -27,6 +27,12 @@ class ErrorCodeManager{
     static get MISSING_RESET_CODE(){return "MISSING_RESET_CODE"}
     static get INVALID_RESET_CODE(){return "INVALID_RESET_CODE"}
 
+    //user
+    static get INVALID_NAME(){return "INVALID_NAME"}
+    static get INVALID_PHONE(){return "INVALID_PHONE"}
+    static get INVALID_GENDER(){return "INVALID_GENDER"}
+    static get INVALID_BIRTHDAY(){return "INVALID_BIRTHDAY"}
+
     //database
     static get DATABASE_ERROR(){return "DATABASE_ERROR"}
     static get SERVER_ERROR(){return "SERVER_ERROR"}
@@ -44,6 +50,11 @@ class ErrorCodeManager{
         EMAIL_NOT_FOUND: {status: 400, message: "Email not found in system"},
         EMAIL_NOT_VERIFIED: {status: 400, message: "Email is net verified"},
         INCORRECT_PASSWORD: {status: 400, message: "Password is incorrect"},
+
+        INVALID_NAME: {status: 400, message: "Name is invalid"},
+        INVALID_GENDER: {status: 400, message: "Gender is invalid"},
+        INVALID_PHONE: {status: 400, message: "Phone is invalid"},
+        INVALID_BIRTHDAY: {status: 400, message: "Birthday is invalid"},
 
         UNAUTHORIZED: {status: 401, message: "UNAUTHORIZED"},
 

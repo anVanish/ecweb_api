@@ -1,25 +1,22 @@
-const TokenService = require('../app/helpers/TokenService')
+const tokenService = require('../app/helpers/TokenService')
 const ApiResponse = require('../app/helpers/ApiResponse')
 const ErrorCodeManager = require('../app/helpers/ErrorCodeManager')
+const ErrorHandling = require('../app/helpers/ErrorHandling')
 
 function authenticateToken(req, res, next) {
     const token = req.headers.authorization
     const apiResponse = new ApiResponse()
 
     if (!token){
-        apiResponse.setError('Missing access token', ErrorCodeManager.UNAUTHORIZED)
-        return res.status(401).json(apiResponse)
+        return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Missing Access Token')
     }
 
-    const decodedToken = new TokenService().decodeAccessToken(token.split(' ')[1])
+    const decodedToken = tokenService.decodeAccessToken(token.split(' ')[1])
     
     if (!decodedToken) {
-        apiResponse.setError('Invalid access token', ErrorCodeManager.UNAUTHORIZED);
-        return res.status(401).json(apiResponse);
+        return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Invalid access token')
     }
-
     req.token = decodedToken
-
     next()
     
 }

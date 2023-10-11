@@ -7,7 +7,7 @@ const NotFoundError = require('./middlewares/NotFoundError')
 const modifyCors = require('./middlewares/ModifyCors')
 
 const app = express()
-const port = 3001
+const port = 3000
 
 
 db.connect()
