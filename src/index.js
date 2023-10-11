@@ -4,15 +4,20 @@ const bodyParser = require('body-parser')
 const route = require('./routes')
 const db = require('./config/db')
 const NotFoundError = require('./middlewares/NotFoundError')
+const modifyCors = require('./middlewares/ModifyCors')
 
 const app = express()
-const port = 3000
+const port = 3001
+
 
 db.connect()
 //middlewares
+app.use(modifyCors);
 app.use(morgan('combined'))
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+// app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({ extended: false }))
 
 //routes
 route(app)
