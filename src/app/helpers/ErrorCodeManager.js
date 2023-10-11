@@ -29,7 +29,45 @@ class ErrorCodeManager{
 
     //database
     static get DATABASE_ERROR(){return "DATABASE_ERROR"}
-    static get UNKNOWN_ERROR(){return "UNKNOWN_ERROR"}
+    static get SERVER_ERROR(){return "SERVER_ERROR"}
+    static get NOT_FOUND(){return "NOT_FOUND"}
+
+    //errorCode status and defaul message
+    static errorCodes = {
+        MISSING_EMAIL: {status: 400, message: "Email is required"},
+        MISSING_PASSWORD: {status: 400, message: "Password is required"},
+        PASSWORD_CONFIRM_INCORRECT: {status: 400, message: "Confirmed password not correct"},
+        INVALID_EMAIL: {status: 400, message: "Email is Invalid"},
+        EMAIL_ALREADY_EXISTS: {status: 409, message: "Email already exist"},
+        FAILURE_SENT_MAIL: {status: 400, message: "Mail failure to sent"},
+
+        EMAIL_NOT_FOUND: {status: 400, message: "Email not found in system"},
+        EMAIL_NOT_VERIFIED: {status: 400, message: "Email is net verified"},
+        INCORRECT_PASSWORD: {status: 400, message: "Password is incorrect"},
+
+        UNAUTHORIZED: {status: 401, message: "UNAUTHORIZED"},
+
+        MISSING_RESET_CODE: {status: 400, message: "ResetCode is required"},
+        INVALID_RESET_CODE: {status: 400, message: "ResetCode is invalid"},
+
+        DATABASE_ERROR: {status: 500, message: "Error in database"},
+        SERVER_ERROR: {status: 500, message: "Internal server error"},
+        NOT_FOUND: {status: 500, message: "404 Not found"},
+    }
+
+    static getHttpStatus(errorCode){
+        const errorInfo = ErrorCodeManager.errorCodes[errorCode]
+        return errorInfo ? errorInfo.status : 500
+    }
+
+    static getErrorMessage(errorCode){
+        const errorInfo = ErrorCodeManager.errorCodes[errorCode]
+        return errorInfo ? errorInfo.message : 'Internal server error'
+    }
+
+    static isContainErrorCode(errorCode){
+        return ErrorCodeManager.errorCodes[errorCode] ? true: false
+    }
 }
 
 module.exports = ErrorCodeManager

@@ -1,8 +1,10 @@
 const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+dotenv.config()
 
 async function connect(){
     try{
-        mongoose.connect('mongodb://localhost/ecweb', {
+        mongoose.connect(process.env.DATABASE_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

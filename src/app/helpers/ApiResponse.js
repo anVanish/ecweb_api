@@ -8,8 +8,14 @@ class ApiResponse{
     }
 
     setError(message, errorCode){
+        this.success = false
         this.message = message
         this.errorCode = errorCode
+    }
+
+    setSuccess(message){
+        this.success = true
+        this.message = message
     }
 }
 
