@@ -1,0 +1,87 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 652cfe030a693fd3ec060af7
+        name:
+          type: string
+          example: Khanh An
+        email:
+          type: string
+          example: alltapduel@email.com
+        phone:
+          type: string
+          example: 0123456789
+        gender:
+          type: string
+          example: Nam
+        birthday:
+          type: string
+          example: 2002-10-10
+        is_seller:
+          type: boolean
+          example: false
+        is_admin:
+          type: boolean
+          example: false 
+    # body
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: alltapduel@gmail.com
+        password:
+          type: password
+          format: password
+          example: alltapduel   
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: alltapduel@gmail.com
+        password:
+          type: string
+          format: password
+          example: alltapduel   
+        confirmPassword:
+          type: string
+          format: password
+          example: alltapduel  
+    ResetPasswordBody:
+      type: object
+      properties:
+        password:
+          type: string
+          format: password
+          example: alltapduel   
+        confirmPassword:
+          type: string
+          format: password
+          example: alltapduel
+        resetCode:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY1MmNmZTAzMGE2OTNmZDNlYzA2MGFmNyJ9LCJpYXQiOjE2OTc0NDc0ODMsImV4cCI6MTY5NzQ0OTI4M30.tRYfwoMXz6chNkZrrnCMD6lpEvDZwraHbL7wm5Mj-Ro
+    
+    # data
+    LoginData:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY1MmNmZTAzMGE2OTNmZDNlYzA2MGFmNyIsImlzX2FkbWluIjpmYWxzZX0sImlhdCI6MTY5NzQ0NzYxNiwiZXhwIjoxNjk4MDUyNDE2fQ._lBo1OZBrdfEccZR0FnUAxdH7lBWEUOiFSTLp1SypUs
+        user:
+          $ref: '#/components/schemas/User'
+  
+     
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

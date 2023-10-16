@@ -1,0 +1,7 @@
+tags:
+  - name: Auth
+    description: API for authenticate user
+  - name: Profile
+    description: API operation about logged in user
+  - name: User
+    description: API operation about user (for admin)

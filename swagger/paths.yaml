@@ -1,0 +1,99 @@
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Logs user into the system
+      description: Only allow user that is registered and verified.
+      operationId: login
+      requestBody: 
+        description: Login Infomation (email, password)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+      responses:
+        '200':
+          description: Logged in
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data: 
+                    $ref: '#/components/schemas/LoginData'
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register and send verified email
+      operationId: register
+      requestBody: 
+        description: Register Infomation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+      responses:
+        '200':
+          description: Register successfully
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Request reset password
+      description: System send verified link to user's email
+      operationId: forgot-password
+      requestBody: 
+        description: Email registered to system and need to reset password
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: alltapduel@gmail.com
+              
+      responses:
+        '200':
+          description: Register successfully
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+    patch:
+      tags:
+        - Auth
+      summary: Reset password
+      description: User must verify email to do this operation
+      operationId: reset-password
+      requestBody: 
+        description: New password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
+      responses:
+        '200':
+          description: Register successfully
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  
