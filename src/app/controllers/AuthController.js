@@ -7,7 +7,6 @@ const ErrorHandling = require('../helpers/ErrorHandling')
 const tokenService = require('../helpers/TokenService')
 
 class AuthController{
-    
     //POST /api/auth/register
     register(req, res){
         const apiResponse = new ApiResponse()
@@ -24,7 +23,8 @@ class AuthController{
                 return user.save()
             })
             .then((savedUser) => {
-                const code = tokenService.generateAccessToken(savedUser._id, '1d')
+                console.log(savedUser)
+                const code = tokenService.generateAccessToken({_id: savedUser._id}, '1d')
                 const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${code}&email=${savedUser.email}`;
                 return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
             })
@@ -51,7 +51,7 @@ class AuthController{
                 if (!user.is_verified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
                 if (user.password !== password) throw ErrorCodeManager.INCORRECT_PASSWORD
                 
-                const accessToken = tokenService.generateAccessToken(user._id)
+                const accessToken = tokenService.generateAccessToken({_id: user._id, is_admin: user.is_admin})
                 apiResponse.data.accessToken = accessToken
                 apiResponse.success = true
 
@@ -62,10 +62,10 @@ class AuthController{
             })
     }
 
-    //GET /api/auth/forgot-password
+    //POST /api/auth/forgot-password
     forgotPassword(req, res){
         const apiResponse = new ApiResponse()
-        const email = req.query.email
+        const email = req.body.email
 
         if (!email) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
         if (!InputValidator.validateEmail(email)) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_EMAIL)
@@ -76,7 +76,7 @@ class AuthController{
                 if (!user.is_verified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
 
                 //generate resetCode and send mail
-                const resetCode = tokenService.generateAccessToken(user._id, '30m')
+                const resetCode = tokenService.generateAccessToken({_id: user._id}, '30m')
                 const link = `Your reset password code is ${resetCode}`;
                 return MailService.sendMail(user.email, 'Reset your password', link);
             })
@@ -89,7 +89,7 @@ class AuthController{
             })
     }
 
-    //POST /api/auth/forgot-password
+    //PATCH /api/auth/forgot-password
     resetPassword(req, res){
         const apiResponse = new ApiResponse()
         const {password, confirmPassword, resetCode} = req.body
@@ -101,7 +101,7 @@ class AuthController{
         const decodedData = tokenService.decodeAccessToken(resetCode)
         if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_RESET_CODE)
 
-        Users.findOneAndUpdate({_id: decodedData.data}, {$set: {password}}, {new: true})
+        Users.findOneAndUpdate({_id: decodedData.data._id}, {$set: {password}}, {new: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
                 
@@ -122,8 +122,9 @@ class AuthController{
 
         const decodedData = tokenService.decodeAccessToken(code)
         if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_CODE)
+        console.log(decodedData)
 
-        Users.findOne({_id: decodedData.data})
+        Users.findOne({_id: decodedData.data._id})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
                 if (user.is_verified) throw ErrorCodeManager.EMAIL_ALREADY_VERIFY

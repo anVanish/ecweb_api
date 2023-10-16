@@ -11,17 +11,11 @@ class UserController{
     updateUser(req, res){
         const _id = req.token.data
         if (!_id) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Required Login')
-        
-        const name = req.body.name
-        const phone = req.body.phone
-        const gender = req.body.gender
-        const birthday = req.body.birthday
-        const user = {name, phone, gender, birthday}
 
-        const errorCode = InputValidator.invalidUser(user)
+        const errorCode = InputValidator.invalidUser(req.body)
         if (errorCode) return ErrorHandling.handleErrorResponse(res, errorCode)
 
-        Users.findByIdAndUpdate(_id, user, {new: true})
+        Users.findByIdAndUpdate(_id, req.body, {new: true})
         .then((updatedUser) => {
             if (!updatedUser) throw ErrorCodeManager.USER_NOT_FOUND
             const apiResponse = new ApiResponse()

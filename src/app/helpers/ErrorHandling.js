@@ -22,7 +22,7 @@ class ErrorHandling{
             return res.status(status).json(apiResponse)
         }
         //error is another
-        apiResponse.setError(error, ErrorCodeManager.SERVER_ERROR)
+        apiResponse.setError(error.message, ErrorCodeManager.SERVER_ERROR)
         return res.status(status).json(apiResponse)
     }
 }
