@@ -21,7 +21,7 @@ MailService.sendMail = async (mailto, subject, link) => {
         subject: subject,
         text: link
     }
-    transporter.sendMail(mailOptions)
+    return transporter.sendMail(mailOptions)
 }
 
 module.exports = MailService
