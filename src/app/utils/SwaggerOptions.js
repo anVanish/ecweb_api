@@ -15,8 +15,11 @@ const options = {
       },
       servers: [
         {
+          url: 'https://tiny-jade-elk-wear.cyclic.cloud'
+        },
+        {
           url: 'http://localhost:3001/api'
-        }
+        },
       ],
     },
     apis: [path.resolve(__dirname, '../../../swagger', '*.yaml')],
