@@ -23,7 +23,6 @@ class AuthController{
                 return user.save()
             })
             .then((savedUser) => {
-                console.log(savedUser)
                 const code = tokenService.generateAccessToken({_id: savedUser._id}, '1d')
                 const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${code}&email=${savedUser.email}`;
                 return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
