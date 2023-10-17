@@ -7,7 +7,7 @@ const openapiSpecification = require('../app/utils/SwaggerOptions')
 function route(app){
     app.use('/api/auth', authRouter)
     app.use('/api/user', userRouter)
-    app.use('/api', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
+    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 }
 
 module.exports = route
