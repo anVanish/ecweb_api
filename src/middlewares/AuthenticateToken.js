@@ -1,7 +1,7 @@
-const tokenService = require('../app/helpers/TokenService')
-const ApiResponse = require('../app/helpers/ApiResponse')
-const ErrorCodeManager = require('../app/helpers/ErrorCodeManager')
-const ErrorHandling = require('../app/helpers/ErrorHandling')
+const tokenService = require('../app/utils/TokenService')
+const ApiResponse = require('../app/utils/ApiResponse')
+const ErrorCodeManager = require('../app/utils/ErrorCodeManager')
+const ErrorHandling = require('../app/utils/ErrorHandling')
 
 function authenticateToken(req, res, next) {
     const token = req.headers.authorization

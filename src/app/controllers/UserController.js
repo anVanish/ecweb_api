@@ -1,7 +1,7 @@
-const ApiResponse = require("../helpers/ApiResponse")
-const ErrorCodeManager = require("../helpers/ErrorCodeManager")
-const ErrorHandling = require("../helpers/ErrorHandling")
-const InputValidator = require("../helpers/InputValidator")
+const ApiResponse = require("../utils/ApiResponse")
+const ErrorCodeManager = require("../utils/ErrorCodeManager")
+const ErrorHandling = require("../utils/ErrorHandling")
+const InputValidator = require("../utils/InputValidator")
 const Users = require("../models/Users")
 
 

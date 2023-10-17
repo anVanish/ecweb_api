@@ -1,5 +1,5 @@
-const ApiResponse = require("../app/helpers/ApiResponse")
-const ErrorCodeManager = require("../app/helpers/ErrorCodeManager")
+const ApiResponse = require("../app/utils/ApiResponse")
+const ErrorCodeManager = require("../app/utils/ErrorCodeManager")
 
 function NotFoundError(req, res, next){
     const apiResponse = new ApiResponse()

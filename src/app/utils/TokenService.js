@@ -1,8 +1,4 @@
-const dotenv = require('dotenv')
 const jwt = require('jsonwebtoken')
-const { model } = require('mongoose')
-
-dotenv.config()
 
 class TokenService{
     constructor(){

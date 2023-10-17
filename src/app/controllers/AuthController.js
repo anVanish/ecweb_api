@@ -1,10 +1,10 @@
-const ApiResponse = require('../helpers/ApiResponse')
-const ErrorCodeManager = require('../helpers/ErrorCodeManager')
-const InputValidator = require('../helpers/InputValidator')
+const ApiResponse = require('../utils/ApiResponse')
+const ErrorCodeManager = require('../utils/ErrorCodeManager')
+const InputValidator = require('../utils/InputValidator')
 const Users = require('../models/Users')
-const MailService = require('../helpers/MailService')
-const ErrorHandling = require('../helpers/ErrorHandling')
-const tokenService = require('../helpers/TokenService')
+const MailService = require('../utils/MailService')
+const ErrorHandling = require('../utils/ErrorHandling')
+const tokenService = require('../utils/TokenService')
 
 class AuthController{
     //POST /api/auth/register
