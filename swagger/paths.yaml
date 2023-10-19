@@ -95,5 +95,30 @@ paths:
                   success:
                     type: boolean
                     example: true
-
+  /auth/verify/email:
+    post:
+      tags:
+        - Auth
+      summary: Verify email for user after registerd
+      operationId: verifyEmail
+      requestBody: 
+        description: Code sent via mail
+        content:
+          application/json:
+            schema:
+              properties:
+                code:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY1MzBmYjI3ZWU5OGJhNjJmNzcyOGQ3MSJ9LCJpYXQiOjE2OTc3MDg4NDAsImV4cCI6MTY5Nzc5NTI0MH0.XAm4oKOhcbspT521e5vy8HNjKH5rvMxB7dXtjs6ZwXo
+      responses:
+        '200':
+          description: Email verified
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+  
   

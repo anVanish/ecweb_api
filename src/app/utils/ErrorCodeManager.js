@@ -40,30 +40,26 @@ class ErrorCodeManager{
 
     //errorCode status and defaul message
     static errorCodes = {
-        MISSING_EMAIL: {status: 400, message: "Email is required"},
-        MISSING_PASSWORD: {status: 400, message: "Password is required"},
-        PASSWORD_CONFIRM_INCORRECT: {status: 400, message: "Confirmed password not correct"},
-        INVALID_EMAIL: {status: 400, message: "Email is Invalid"},
-        EMAIL_ALREADY_EXISTS: {status: 409, message: "Email already exist"},
-        FAILURE_SENT_MAIL: {status: 400, message: "Mail failure to sent"},
-
-        EMAIL_NOT_FOUND: {status: 400, message: "Email not found in system"},
-        EMAIL_NOT_VERIFIED: {status: 400, message: "Email is net verified"},
-        INCORRECT_PASSWORD: {status: 400, message: "Password is incorrect"},
-
-        INVALID_NAME: {status: 400, message: "Name is invalid"},
-        INVALID_GENDER: {status: 400, message: "Gender is invalid"},
-        INVALID_PHONE: {status: 400, message: "Phone is invalid"},
-        INVALID_BIRTHDAY: {status: 400, message: "Birthday is invalid"},
-
-        UNAUTHORIZED: {status: 401, message: "UNAUTHORIZED"},
-
-        MISSING_RESET_CODE: {status: 400, message: "ResetCode is required"},
-        INVALID_RESET_CODE: {status: 400, message: "ResetCode is invalid"},
-
-        DATABASE_ERROR: {status: 500, message: "Error in database"},
-        SERVER_ERROR: {status: 500, message: "Internal server error"},
-        NOT_FOUND: {status: 500, message: "404 Not found"},
+        MISSING_EMAIL: { status: 400, message: "Email is required" },
+        MISSING_PASSWORD: { status: 400, message: "Password is required" },
+        PASSWORD_CONFIRM_INCORRECT: { status: 400, message: "Confirmed password not correct" },
+        INVALID_EMAIL: { status: 400, message: "Email is Invalid" },
+        EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },
+        FAILURE_SENT_MAIL: { status: 400, message: "Mail failure to sent" },
+        EMAIL_ALREADY_VERIFY: { status: 400, message: "Email already verified" },
+        EMAIL_NOT_FOUND: { status: 400, message: "Email not found in the system" },
+        EMAIL_NOT_VERIFIED: { status: 400, message: "Email is not verified" },
+        INCORRECT_PASSWORD: { status: 400, message: "Password is incorrect" },
+        INVALID_NAME: { status: 400, message: "Name is invalid" },
+        INVALID_GENDER: { status: 400, message: "Gender is invalid" },
+        INVALID_PHONE: { status: 400, message: "Phone is invalid" },
+        INVALID_BIRTHDAY: { status: 400, message: "Birthday is invalid" },
+        UNAUTHORIZED: { status: 401, message: "UNAUTHORIZED" },
+        MISSING_RESET_CODE: { status: 400, message: "ResetCode is required" },
+        INVALID_RESET_CODE: { status: 400, message: "ResetCode is invalid" },
+        DATABASE_ERROR: { status: 500, message: "Error in the database" },
+        SERVER_ERROR: { status: 500, message: "Internal server error" },
+        NOT_FOUND: { status: 500, message: "404 Not found" }
     }
 
     static getHttpStatus(errorCode){

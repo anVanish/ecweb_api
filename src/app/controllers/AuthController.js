@@ -5,7 +5,6 @@ const Users = require('../models/Users')
 const MailService = require('../utils/MailService')
 const ErrorHandling = require('../utils/ErrorHandling')
 const tokenService = require('../utils/TokenService')
-const UserController = require('./UserController')
 
 class AuthController{
     //POST /api/auth/register
@@ -25,7 +24,8 @@ class AuthController{
             })
             .then((savedUser) => {
                 const code = tokenService.generateAccessToken({_id: savedUser._id}, '1d')
-                const link = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${code}&email=${savedUser.email}`;
+                const host = process.env.CLIENT_HOST ? process.env.CLIENT_HOST : 'http://localhost:3000'
+                const link = `${host}/verifyEmail/${code}`;
                 return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
             })
             .then(() => {
@@ -116,16 +116,15 @@ class AuthController{
             })
     }
 
-    //GET /api/auth/verify-email
+    //POST /api/auth/verify/email
     verifyEmail(req, res){
         const apiResponse = new ApiResponse()
-        const code = req.query.code
+        const code = req.body.code
 
         if (!code) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_VERIFY_CODE)
 
         const decodedData = tokenService.decodeAccessToken(code)
         if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_CODE)
-        console.log(decodedData)
 
         Users.findOne({_id: decodedData.data._id})
             .then((user) => {
