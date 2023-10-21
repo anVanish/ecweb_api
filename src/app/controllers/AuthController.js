@@ -86,7 +86,7 @@ class AuthController{
                 //generate resetCode and send mail
                 const resetCode = tokenService.generateAccessToken({_id: user._id}, '30m')
                 const host = process.env.CLIENT_HOST ? process.env.CLIENT_HOST : 'http://localhost:3000'
-                const link = `${host}/resetPass/${code}`;
+                const link = `${host}/resetPass/${resetCode}`;
                 return MailService.sendMail(user.email, 'Reset your password', link);
             })
             .then(() => {
