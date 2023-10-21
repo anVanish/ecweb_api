@@ -6,6 +6,7 @@ const MailService = require('../utils/MailService')
 const ErrorHandling = require('../utils/ErrorHandling')
 const tokenService = require('../utils/TokenService')
 const ProfileResponse = require('../utils/ProfileResponse')
+const {calculateTimeSpanHours} = require('../utils/TimeUtils')
 
 class AuthController{
     //POST /api/auth/register
@@ -18,17 +19,13 @@ class AuthController{
 
         Users.findOne({ email })
             .then((foundUser) => {
-                if (foundUser){
-                    if (!foundUser.is_verified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
-                    if (foundUser.is_deleted){
-                        const timeSpans = ( new Date() - foundUser.deleted_at) / (1000 * 60 * 60)
-                        if (timeSpans < 24) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                if (!foundUser){
+                    const user = new Users({ email, password })
+                    return user.save()
                     }
-                    throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
-                }
-
-                const user = new Users({ email, password })
-                return user.save()
+                if (!foundUser.is_verified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
+                if (foundUser.is_deleted && calculateTimeSpanHours(foundUser.deleted_at, new Date()) < 24) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
             })
             .then((savedUser) => {
                 const code = tokenService.generateAccessToken({_id: savedUser._id}, '1d')
@@ -110,7 +107,7 @@ class AuthController{
         const decodedData = tokenService.decodeAccessToken(resetCode)
         if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_RESET_CODE)
 
-        Users.findOneAndUpdate({_id: decodedData.data._id}, {$set: {password}}, {new: true})
+        Users.findOneAndUpdate({_id: decodedData.user._id}, {$set: {password}}, {new: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
                 
