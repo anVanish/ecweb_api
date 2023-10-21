@@ -49,7 +49,18 @@ class ProfileController{
 
     //DELETE /api/users/me
     deleteAccount(req, res){
-        res.json('delete account')
+        const _id = req.user._id
+
+        Users.findByIdAndUpdate(_id, {is_deleted: true, deleted_at: new Date()}, {new: true})
+        .then((updatedUser) => {
+            if (!updatedUser) throw ErrorCodeManager.UNAUTHORIZED
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Account deleted')
+            res.json(apiResponse)
+        })
+        .catch((error) => {
+            ErrorHandling.handleErrorResponse(res, error)
+        })
     }
 
 }

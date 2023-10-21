@@ -12,6 +12,9 @@ const Users = new Schema({
     birthday: {type: Date},
     is_seller: {type: Boolean, default: false},
     is_admin: {type: Boolean, default: false},
+    is_deleted: {type: Boolean},
+    created_at: {type: Date, default: new Date()},
+    deleted_at: {type: Date}
 })
 
 module.exports = mongoose.model('users', Users)

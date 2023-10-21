@@ -19,9 +19,12 @@ class AuthController{
         Users.findOne({ email })
             .then((foundUser) => {
                 if (foundUser){
-                    if (foundUser.is_deleted && foundUser.deleted_at > new Date()){
-
+                    if (!foundUser.is_verified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
+                    if (foundUser.is_deleted){
+                        const timeSpans = ( new Date() - foundUser.deleted_at) / (1000 * 60 * 60)
+                        if (timeSpans < 24) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
                     }
+                    throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
                 }
 
                 const user = new Users({ email, password })
@@ -82,7 +85,8 @@ class AuthController{
 
                 //generate resetCode and send mail
                 const resetCode = tokenService.generateAccessToken({_id: user._id}, '30m')
-                const link = `Your reset password code is ${resetCode}`;
+                const host = process.env.CLIENT_HOST ? process.env.CLIENT_HOST : 'http://localhost:3000'
+                const link = `${host}/resetPass/${code}`;
                 return MailService.sendMail(user.email, 'Reset your password', link);
             })
             .then(() => {

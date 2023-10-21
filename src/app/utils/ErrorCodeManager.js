@@ -41,6 +41,10 @@ class ErrorCodeManager{
     //require id
     static get MISSING_ID(){return "MISSING_ID"}
 
+    //delete accoung
+    static get ACCOUNT_PENDING_DELETE(){return "ACCOUNT_PENDING_DELETE"}
+    static  get EMAIL_PENDING_VERIFY(){return "EMAIL_PENDING_VERIFY"}
+
     //errorCode status and defaul message
     static errorCodes = {
         MISSING_EMAIL: { status: 400, message: "Email is required" },
@@ -65,7 +69,9 @@ class ErrorCodeManager{
         NOT_FOUND: { status: 500, message: "404 Not found" },
         MISSING_ID: {status: 400, message: "Id is missing"},
         USER_NOT_FOUND: {status: 400, message: "User not found"},
-        INVALID_CODE: {status: 400, message: "Code is Invalid"}
+        INVALID_CODE: {status: 400, message: "Code is Invalid"},
+        ACCOUNT_PENDING_DELETE: {status: 400, message: "Account is pending to delete"},
+        EMAIL_PENDING_VERIFY: {status: 400, message: "Email is pending to verify"},
     }
 
     static getHttpStatus(errorCode){
