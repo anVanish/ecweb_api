@@ -125,7 +125,7 @@ class AuthController{
         const decodedData = tokenService.decodeAccessToken(code)
         if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_CODE)
 
-        Users.findOne({_id: decodedData.data._id})
+        Users.findOne({_id: decodedData.user._id})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
                 if (user.is_verified) throw ErrorCodeManager.EMAIL_ALREADY_VERIFY

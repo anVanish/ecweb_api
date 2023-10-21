@@ -64,7 +64,8 @@ class ErrorCodeManager{
         SERVER_ERROR: { status: 500, message: "Internal server error" },
         NOT_FOUND: { status: 500, message: "404 Not found" },
         MISSING_ID: {status: 400, message: "Id is missing"},
-        USER_NOT_FOUND: {status: 400, message: "User not found"}
+        USER_NOT_FOUND: {status: 400, message: "User not found"},
+        INVALID_CODE: {status: 400, message: "Code is Invalid"}
     }
 
     static getHttpStatus(errorCode){
