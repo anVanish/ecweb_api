@@ -18,7 +18,11 @@ class AuthController{
 
         Users.findOne({ email })
             .then((foundUser) => {
-                if (foundUser) throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
+                if (foundUser){
+                    if (foundUser.is_deleted && foundUser.deleted_at > new Date()){
+
+                    }
+                }
 
                 const user = new Users({ email, password })
                 return user.save()
@@ -68,8 +72,7 @@ class AuthController{
         const apiResponse = new ApiResponse()
         const email = req.body.email
 
-        if (!email) return ErrorHandling.h
-        andleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
+        if (!email) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
         if (!InputValidator.validateEmail(email)) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_EMAIL)
 
         Users.findOne({email})
