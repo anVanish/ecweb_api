@@ -33,10 +33,13 @@ class ErrorCodeManager{
     static get INVALID_GENDER(){return "INVALID_GENDER"}
     static get INVALID_BIRTHDAY(){return "INVALID_BIRTHDAY"}
 
-    //database
+    //server
     static get DATABASE_ERROR(){return "DATABASE_ERROR"}
     static get SERVER_ERROR(){return "SERVER_ERROR"}
     static get NOT_FOUND(){return "NOT_FOUND"}
+
+    //require id
+    static get MISSING_ID(){return "MISSING_ID"}
 
     //errorCode status and defaul message
     static errorCodes = {
@@ -59,7 +62,9 @@ class ErrorCodeManager{
         INVALID_RESET_CODE: { status: 400, message: "ResetCode is invalid" },
         DATABASE_ERROR: { status: 500, message: "Error in the database" },
         SERVER_ERROR: { status: 500, message: "Internal server error" },
-        NOT_FOUND: { status: 500, message: "404 Not found" }
+        NOT_FOUND: { status: 500, message: "404 Not found" },
+        MISSING_ID: {status: 400, message: "Id is missing"},
+        USER_NOT_FOUND: {status: 400, message: "User not found"}
     }
 
     static getHttpStatus(errorCode){

@@ -5,6 +5,7 @@ const Users = require('../models/Users')
 const MailService = require('../utils/MailService')
 const ErrorHandling = require('../utils/ErrorHandling')
 const tokenService = require('../utils/TokenService')
+const ProfileResponse = require('../utils/ProfileResponse')
 
 class AuthController{
     //POST /api/auth/register
@@ -51,13 +52,10 @@ class AuthController{
                 if (!user.is_verified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
                 if (user.password !== password) throw ErrorCodeManager.INCORRECT_PASSWORD
                 
-                const accessToken = tokenService.generateAccessToken({_id: user._id, is_admin: user.is_admin})
+                const accessToken = tokenService.generateAccessToken({_id: user._id, is_seller: user.is_seller, is_admin: user.is_admin})
                 apiResponse.data.accessToken = accessToken
-                const {_id, name, email, phone, gender, birthday, is_seller, is_admin} = user
-                apiResponse.data.user = {_id, name, email, phone, gender, birthday, is_seller, is_admin}  
-
+                apiResponse.data.user = new ProfileResponse(user)
                 apiResponse.success = true
-
                 res.json(apiResponse)
             })
             .catch((error) => {
@@ -70,7 +68,8 @@ class AuthController{
         const apiResponse = new ApiResponse()
         const email = req.body.email
 
-        if (!email) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
+        if (!email) return ErrorHandling.h
+        andleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
         if (!InputValidator.validateEmail(email)) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_EMAIL)
 
         Users.findOne({email})
