@@ -4,8 +4,8 @@ const SoftDeleteFilter = require('../utils/SoftDeleteFilter')
 
 const Users = new Schema({
     name: {type: String},
-    email: {type: String},
-    password: {type: String},
+    email: {type: String, required: true},
+    password: {type: String, required: true},
     isVerified: {type: Boolean, default: false},
     phone: {type: String},
     gender: {type: String},

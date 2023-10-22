@@ -6,7 +6,6 @@ const MailService = require('../utils/MailService')
 const ErrorHandling = require('../utils/ErrorHandling')
 const tokenService = require('../utils/TokenService')
 const ProfileResponse = require('../utils/ProfileResponse')
-const {calculateTimeSpanHours} = require('../utils/TimeUtils')
 
 class AuthController{
     //POST /api/auth/register
@@ -19,9 +18,11 @@ class AuthController{
         
         Users.findOneUsers({ email }, {addPending: true})
             .then((foundUser) => {
-                if (foundUser) throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
-                if (!foundUser.isVerified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
-                if (foundUser.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                if (foundUser){
+                    if (!foundUser.isVerified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
+                    if (foundUser.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                    throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
+                }
                 
                 const user = new Users({ email, password })
                 return user.save()  
@@ -135,13 +136,10 @@ class AuthController{
         const decodedData = tokenService.decodeAccessToken(code)
         if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_CODE)
 
-        Users.findOne({_id: decodedData.user._id})
+        Users.findOneUsers({_id: decodedData.user._id}, {addPending: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
-                if (user.isDeleted){
-                    if (calculateTimeSpanHours(user.deleted_at, new Date())) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
-                    else throw ErrorCodeManager.USER_NOT_FOUND
-                }
+                if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
                 if (user.isVerified) throw ErrorCodeManager.EMAIL_ALREADY_VERIFY
 
                 user.isVerified = true
