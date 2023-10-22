@@ -16,16 +16,15 @@ class AuthController{
 
         const error = InputValidator.invalidAuth({email, password, confirmPassword})
         if (error) return ErrorHandling.handleErrorResponse(res, error)
-
-        Users.findOne({ email })
+        
+        Users.findOneUsers({ email }, {addPending: true})
             .then((foundUser) => {
-                if (!foundUser){
-                    const user = new Users({ email, password })
-                    return user.save()
-                    }
-                if (!foundUser.is_verified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
-                if (foundUser.is_deleted && calculateTimeSpanHours(foundUser.deleted_at, new Date()) < 24) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
-                throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
+                if (foundUser) throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
+                if (!foundUser.isVerified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
+                if (foundUser.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                
+                const user = new Users({ email, password })
+                return user.save()  
             })
             .then((savedUser) => {
                 const code = tokenService.generateAccessToken({_id: savedUser._id}, '1d')
@@ -50,13 +49,20 @@ class AuthController{
         const error = InputValidator.invalidAuth({email, password})
         if (error) return ErrorHandling.handleErrorResponse(res, error)
         
-        Users.findOne({email})
+        Users.findOneUsers({email}, {addPending: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.EMAIL_NOT_FOUND
-                if (!user.is_verified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
+                if (!user.isVerified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
+                if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
                 if (user.password !== password) throw ErrorCodeManager.INCORRECT_PASSWORD
                 
-                const accessToken = tokenService.generateAccessToken({_id: user._id, is_seller: user.is_seller, is_admin: user.is_admin})
+                const accessToken = tokenService.generateAccessToken({
+                    _id: user._id, 
+                    isSeller: user.isSeller, 
+                    isAdmin: user.isAdmin,
+                    isDeleted: user.isDeleted,
+                })
+                
                 apiResponse.data.accessToken = accessToken
                 apiResponse.data.user = new ProfileResponse(user)
                 apiResponse.success = true
@@ -75,10 +81,11 @@ class AuthController{
         if (!email) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
         if (!InputValidator.validateEmail(email)) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_EMAIL)
 
-        Users.findOne({email})
+        Users.findOneUsers({email}, {addPending: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.EMAIL_NOT_FOUND
-                if (!user.is_verified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
+                if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                if (!user.isVerified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
 
                 //generate resetCode and send mail
                 const resetCode = tokenService.generateAccessToken({_id: user._id}, '30m')
@@ -110,7 +117,6 @@ class AuthController{
         Users.findOneAndUpdate({_id: decodedData.user._id}, {$set: {password}}, {new: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
-                
                 apiResponse.success = true
                 res.json(apiResponse)
             })
@@ -132,9 +138,13 @@ class AuthController{
         Users.findOne({_id: decodedData.user._id})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
-                if (user.is_verified) throw ErrorCodeManager.EMAIL_ALREADY_VERIFY
+                if (user.isDeleted){
+                    if (calculateTimeSpanHours(user.deleted_at, new Date())) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+                    else throw ErrorCodeManager.USER_NOT_FOUND
+                }
+                if (user.isVerified) throw ErrorCodeManager.EMAIL_ALREADY_VERIFY
 
-                user.is_verified = true
+                user.isVerified = true
                 return user.save()
             })
             .then(() => {

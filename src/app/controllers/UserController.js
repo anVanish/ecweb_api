@@ -7,17 +7,43 @@ const Users = require("../models/Users")
 class UserController{ 
 
     //GET /api/users
-    listUsers(req, res){
-        Users.find({})
-        .then((users) =>{
+    async listUsers(req, res){
+        //params all=false, deleted=true, page=1, limit=5
+        let page = 1
+        let limit = 10
+        let search = ''
+
+        //pagintion
+        page = parseInt(req.query.page)      
+        limit = parseInt(req.query.limit)
+        //search
+        if (req.query.search) search = req.query.search
+        
+        //soft deleted filters
+        const all = (req.query.all === 'true')
+        const deleted = (req.query.deleted === 'true')
+        const pending = (req.query.pending === 'true')
+        const options = {all, deleted, pending}
+
+        const filters = {$or:[
+                    {name: { $regex: `.*${search}.*`, $options: 'i' }},
+                    {email: { $regex: `.*${search}.*`, $options: 'i' }},
+                ]}
+
+        try{
+            const total = await Users.countUsers(filters, options)
+            const users = await Users.findUsers(filters, options)
+                .skip((page - 1) * limit)
+                .limit(limit)
             const apiResponse = new ApiResponse()
-            apiResponse.success = true
-            apiResponse.data = users
+            apiResponse.data.total = total
+            apiResponse.data.length = users.length
+            apiResponse.data.users = users
+
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        } catch(error){
             ErrorHandling.handleErrorResponse(res, error)
-        })
+        }
     }
 
     //GET /api/users/:userId
@@ -97,8 +123,6 @@ class UserController{
             ErrorHandling.handleErrorResponse(res, error)
         })
     }
-
-    
 }
 
 module.exports = new UserController()

@@ -1,5 +1,5 @@
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-const nameRegex = /^[a-zA-Z ]+$/
+const nameRegex = /^[\p{L}\p{M}\s.'-]+$/u
 const phoneRegex = /^0\d{9}$/
 const genderRegex = /^(male|female)?$/i
 const birthdayRegex = /^(\d{4})-(\d{2})-(\d{2})$/

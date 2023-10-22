@@ -1,20 +1,45 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const ObjectId = mongoose.Types.ObjectId
+const SoftDeleteFilter = require('../utils/SoftDeleteFilter')
 
 const Users = new Schema({
     name: {type: String},
     email: {type: String},
     password: {type: String},
-    is_verified: {type: Boolean, default: false},
+    isVerified: {type: Boolean, default: false},
     phone: {type: String},
     gender: {type: String},
     birthday: {type: Date},
-    is_seller: {type: Boolean, default: false},
-    is_admin: {type: Boolean, default: false},
-    is_deleted: {type: Boolean},
-    created_at: {type: Date, default: new Date()},
-    deleted_at: {type: Date}
+    isSeller: {type: Boolean, default: false},
+    isAdmin: {type: Boolean, default: false},
+    isDeleted: {type: Boolean},
+    createdAt: {type: Date, default: new Date()},
+    deletedAt: {type: Date},
 })
+
+//find users with default is not delete in database
+Users.statics.countUsers = function(filters={}, options={}){
+    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    return this.countDocuments(userFilters)
+}
+
+Users.statics.findUsers = function(filters={}, options={}){
+    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    return this.find(userFilters)
+}
+
+Users.statics.findOneUsers = function(filters={}, options={}){
+    const userFilters = SoftDeleteFilter.userFilter(filters, options) 
+    return this.findOne(userFilters)   
+}
+
+Users.statics.findOneAndUpdateUsers = function(filters, updateData={}, options={}){
+    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    return this.findOneAndUpdate(userFilters, updateData, options)
+}
+
+Users.statics.deleteUsersById = function(_id, options){
+    return this.findByIdAndUpdate(_id, {isDeleted: true, deletedAt: new Date()}, options)
+}
 
 module.exports = mongoose.model('users', Users)

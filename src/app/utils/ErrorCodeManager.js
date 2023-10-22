@@ -41,9 +41,9 @@ class ErrorCodeManager{
     //require id
     static get MISSING_ID(){return "MISSING_ID"}
 
-    //delete accoung
+    //delete account
     static get ACCOUNT_PENDING_DELETE(){return "ACCOUNT_PENDING_DELETE"}
-    static  get EMAIL_PENDING_VERIFY(){return "EMAIL_PENDING_VERIFY"}
+    static get EMAIL_PENDING_VERIFY(){return "EMAIL_PENDING_VERIFY"}
 
     //errorCode status and defaul message
     static errorCodes = {

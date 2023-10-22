@@ -7,7 +7,7 @@ function authenticateToken(req, res, next){
     if (!token) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Missing Access Token')
     const decodedToken = tokenService.decodeAccessToken(token.split(' ')[1])
     if (!decodedToken) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Invalid access token')
-
+    if (decodedToken.user.isDeleted) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Account is deleted')
     req.user = decodedToken.user
     next()
 }
@@ -18,13 +18,13 @@ function authenticateUser(req, res, next){
 }
 
 function authenticateSeller(req, res, next){
-    if (!req.user || !req.user.is_seller) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, "You must be seller or no privilege to do this action")
+    if (!req.user || !req.user.isSeller) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, "You must be seller or no privilege to do this action")
     next()
 }
 
 function authenticateAdmin(req, res, next) {
 
-    if (!req.user || !req.user.is_admin) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, "Only admin can do this action")
+    if (!req.user || !req.user.isAdmin) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, "Only admin can do this action")
     next()
 }
 

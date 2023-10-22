@@ -9,9 +9,10 @@ class ProfileController{
     //GET /api/users/me
     getProfile(req, res){
         const _id = req.user._id
-        Users.findOne({_id})
+        Users.findOneUsers({_id}, {addPending: true})
         .then((user) => {
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
 
             const apiResponse = new ApiResponse()
             apiResponse.success = true
@@ -19,7 +20,7 @@ class ProfileController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(error)
+            ErrorHandling.handleErrorResponse(res, error)
         })
     }
 
@@ -34,9 +35,10 @@ class ProfileController{
         const errorCode = InputValidator.invalidUser(req.body)
         if (errorCode) return ErrorHandling.handleErrorResponse(res, errorCode)
 
-        Users.findByIdAndUpdate(_id, req.body, {new: true})
+        Users.findOneAndUpdateUsers({_id}, req.body, {new: true, addPending: true})
         .then((updatedUser) => {
             if (!updatedUser) throw ErrorCodeManager.USER_NOT_FOUND
+            if (updatedUser.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
             const apiResponse = new ApiResponse()
             apiResponse.success = true
             apiResponse.data.user = new ProfileResponse(updatedUser)
@@ -51,9 +53,9 @@ class ProfileController{
     deleteAccount(req, res){
         const _id = req.user._id
 
-        Users.findByIdAndUpdate(_id, {is_deleted: true, deleted_at: new Date()}, {new: true})
+        Users.deleteUsersById(_id, {new: true})
         .then((updatedUser) => {
-            if (!updatedUser) throw ErrorCodeManager.UNAUTHORIZED
+            if (!updatedUser) throw ErrorCodeManager.USER_NOT_FOUND
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Account deleted')
             res.json(apiResponse)
