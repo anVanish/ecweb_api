@@ -4,10 +4,10 @@ const ErrorHandling = require('../app/utils/ErrorHandling')
 
 function authenticateToken(req, res, next){
     const token = req.headers.authorization
+    console.log(token)
     if (!token) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Missing Access Token')
     const decodedToken = tokenService.decodeAccessToken(token.split(' ')[1])
     if (!decodedToken) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Invalid access token')
-    if (decodedToken.user.isDeleted) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.UNAUTHORIZED, 'Account is deleted')
     req.user = decodedToken.user
     next()
 }

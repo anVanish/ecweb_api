@@ -35,7 +35,7 @@ class ProfileController{
         const errorCode = InputValidator.invalidUser(req.body)
         if (errorCode) return ErrorHandling.handleErrorResponse(res, errorCode)
 
-        Users.findOneAndUpdateUsers({_id}, req.body, {new: true, addPending: true})
+        Users.findOneAndUpdateUsers({_id}, new ProfileResponse(req.body), {new: true, addPending: true})
         .then((updatedUser) => {
             if (!updatedUser) throw ErrorCodeManager.USER_NOT_FOUND
             if (updatedUser.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE

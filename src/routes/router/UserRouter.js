@@ -13,7 +13,7 @@ router.delete('/me', authenticateUser, profileController.deleteAccount)
 
 router.get('/', authenticateAdmin, userController.listUsers)
 router.get('/:userId', authenticateAdmin, userController.detailUser)
-router.post('/:userId', authenticateAdmin, userController.addUser)
+router.post('/', authenticateAdmin, userController.addUser)
 router.patch('/:userId', authenticateAdmin, userController.updateUser)
 router.delete('/:userId', authenticateAdmin, userController.deleteUser)
 

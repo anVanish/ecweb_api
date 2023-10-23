@@ -44,12 +44,12 @@ InputValidator.validateGender = (gender) => {
 InputValidator.invalidAuth = (auth) =>{
     if (!auth.email)
         return ErrorCodeManager.MISSING_EMAIL
+    if (!InputValidator.validateEmail(auth.email))
+        return ErrorCodeManager.INVALID_EMAIL
     if (!auth.password)
         return ErrorCodeManager.MISSING_PASSWORD
     if (auth.confirmPassword && auth.password !== auth.confirmPassword)
         return ErrorCodeManager.PASSWORD_CONFIRM_INCORRECT
-    if (!InputValidator.validateEmail(auth.email))
-        return ErrorCodeManager.INVALID_EMAIL
     return null
 }
 

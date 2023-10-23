@@ -11,22 +11,67 @@ components:
           example: Khanh An
         email:
           type: string
-          example: alltapduel@email.com
+          example: alltapduel@gmail.com
         phone:
           type: string
-          example: 0123456789
+          example: '0123456789'
         gender:
           type: string
-          example: Nam
+          example: Male
         birthday:
           type: string
           example: 2002-10-10
-        is_seller:
+        isSeller:
           type: boolean
           example: false
-        is_admin:
+        isAdmin:
           type: boolean
           example: false 
+        isDeleted:
+          type: boolean
+          example: false
+        createdAt:
+          type: date
+          example: 2023-10-22T19:44:04.370Z
+        deletedAt:
+          type: date
+          example: 2023-10-22T19:44:04.370Z 
+    Profile:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Khanh An
+        phone:
+          type: string
+          example: '0123456789'
+        gender:
+          type: string
+          example: Male
+        birthday:
+          type: string
+          example: 2002-10-10   
+    AddUser:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Khanh An
+        email:
+          type: string
+          example: alltapduel@gmail.com
+        password:
+          type: string
+          example: alltapduel
+        phone:
+          type: string
+          example: '0123456789'
+        gender:
+          type: string
+          example: Male
+        birthday:
+
+
     # body
     LoginBody:
       type: object
@@ -78,7 +123,20 @@ components:
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY1MmNmZTAzMGE2OTNmZDNlYzA2MGFmNyIsImlzX2FkbWluIjpmYWxzZX0sImlhdCI6MTY5NzQ0NzYxNiwiZXhwIjoxNjk4MDUyNDE2fQ._lBo1OZBrdfEccZR0FnUAxdH7lBWEUOiFSTLp1SypUs
         user:
           $ref: '#/components/schemas/User'
-  
+
+    # error
+    Error:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: false
+        errorCode:
+          type: string
+          example: errorCode
+        message:
+          type: string
+          example: message
      
   securitySchemes:
     BearerAuth:

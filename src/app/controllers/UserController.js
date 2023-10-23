@@ -111,12 +111,12 @@ class UserController{
         const _id = req.params.userId
         if (!_id) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_ID, 'User Id is required')
         
-        Users.findByIdAndRemove(_id)
+        Users.deleteUsersById(_id, {new: true})
         .then((user) => {
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
 
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('Delete user successful')
+            apiResponse.setSuccess('User deleted')
             res.json(apiResponse)
         })
         .catch((error) => {

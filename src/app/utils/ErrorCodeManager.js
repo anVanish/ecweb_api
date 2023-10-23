@@ -70,8 +70,8 @@ class ErrorCodeManager{
         MISSING_ID: {status: 400, message: "Id is missing"},
         USER_NOT_FOUND: {status: 400, message: "User not found"},
         INVALID_CODE: {status: 400, message: "Code is Invalid"},
-        ACCOUNT_PENDING_DELETE: {status: 400, message: "Account is pending to delete"},
-        EMAIL_PENDING_VERIFY: {status: 400, message: "Email is pending to verify"},
+        ACCOUNT_PENDING_DELETE: {status: 202, message: "Account is pending to delete"},
+        EMAIL_PENDING_VERIFY: {status: 202, message: "Email is pending to verify"},
     }
 
     static getHttpStatus(errorCode){

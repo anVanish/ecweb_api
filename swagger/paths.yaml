@@ -24,6 +24,14 @@ paths:
                     example: true
                   data: 
                     $ref: '#/components/schemas/LoginData'
+        '202':
+          description: Accepted, EMAIL_PENDING_VERIFY | ACCOUNT_PENDING_DELETE
+        '400':
+          description: Bad request, MISSING_EMAIL | INVALID_EMAIL | MISSING_PASSWORD | EMAIL_NOT_FOUND | INCORRECT_PASSWORD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /auth/register:
     post:
       tags:
@@ -46,6 +54,16 @@ paths:
                   success:
                     type: boolean
                     example: true
+        '202': 
+          description: Accepted, EMAIL_PENDING_VERIFY | ACCOUNT_PENDING_DELETE
+        '400':
+          description: Bad request, MISSING_EMAIL | INVALID_EMAIL | MISSING_PASSWORD | PASSWORD_CONFIRM_INCORRECT
+        '409': 
+          description: Conflict, EMAIL_ALREADY_EXISTS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
   /auth/forgot-password:
     post:
       tags:
@@ -73,6 +91,14 @@ paths:
                   success:
                     type: boolean
                     example: true
+        '202':
+          description: Accepted, EMAIL_PENDING_VERIFY | ACCOUNT_PENDING_DELETE
+        '400':
+          description: Bad request, MISSING_EMAIL | INVALID_EMAIL | EMAIL_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     patch:
       tags:
         - Auth
@@ -95,6 +121,12 @@ paths:
                   success:
                     type: boolean
                     example: true
+        '400':
+          description: Bad request, MISSING_PASSWORD | PASSWORD_CONFIRM_INCORRECT | MISSING_RESET_CODE | INVALID_RESET_CODE | USER_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /auth/verify/email:
     post:
       tags:
@@ -120,5 +152,354 @@ paths:
                   success:
                     type: boolean
                     example: true
-  
-  
+        '202':
+          description: Accepted, ACCOUNT_PENDING_DELETE
+        '400':
+          description: Bad request, MISSING_VERIFY_CODE | INVALID_CODE | USER_NOT_FOUND | EMAIL_ALREADY_VERIFY
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users:
+    get:
+      tags:
+        - User
+      summary: Find all users
+      description: Allow admin view list of all users in system.
+      operationId: findUsers
+      parameters:
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: all
+          in: query
+          description: The flag to get all users (include deleted users)
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: deleted
+          in: query
+          description: The flag to get only deleted users
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: pending
+          in: query
+          description: The flag to get only pending deleted users (deleted within 24hs)
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: search
+          in: query
+          description: Allows the client to specify a search string for filtering users based on name or email.
+          required: false
+          explode: true
+          schema:
+            type: string
+      security: 
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Find users successfully
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: number
+                        example: 20
+                      length:
+                        type: number
+                        example: 10
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - User
+      summary: Add new user
+      description: Allow admin to add new user into system
+      operationId: addUsers
+      requestBody: 
+        description: Users infomaiton
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User added
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_EMAIL | MISSING_EMAIL | MISSING_PASSWORD | PASSWORD_CONFIRM_INCORRECT | INVALID_NAME | INVALID_PHONE | INVALID_GENDER | INVALID_BIRTHDAY
+        '401': 
+          description: Unauthorized, UNAUTHORIZED
+        '409':
+          description: Conflict, EMAIL_ALREADY_EXISTS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{userId}:
+    get:
+      tags:
+        - User
+      summary: Find users by id
+      description: Allow admin user by using id.
+      operationId: findUsersById
+      parameters:
+        - name: userId
+          in: path
+          description: Id of users
+          required: true
+          explode: true
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID
+      security: 
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Find users successfully
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request, USER_NOT_FOUND
+        '401': 
+          description: Unauthorized, UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+    patch:
+      tags:
+        - User
+      summary: Update user by id
+      description: Allow admin to update user by id
+      operationId: updateUsers
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID
+      requestBody: 
+        description: Users infomaiton
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_ID | INVALID_NAME | INVALID_PHONE | INVALID_GENDER | INVALID_BIRTHDAY | USER_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - User
+      summary: Delete user by id
+      description: Allow admin to delete user by id
+      operationId: deleteUsers
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, USER_NOT_FOUND
+        '401': 
+          description: Unauthorized, UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/me:
+    get:
+      tags:
+        - Profile
+      summary: Find profile
+      description: Authenticated user find their profile
+      operationId: findMe
+      security: 
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '202':
+          description: Accepted, ACCOUNT_PENDING_DELETE
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Profile
+      summary: Update profile
+      description: Authenticated user update their profile
+      operationId: updateProfile
+      
+      requestBody: 
+        description: Users infomaiton
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user: 
+                        $ref: '#/components/schemas/Profile'
+        '202':
+          description: Accepted, ACCOUNT_PENDING_DELETE
+        '400':
+          description: Bad request, USER_NOT_FOUND | INVALID_NAME | INVALID_PHONE | INVALID_GENDER | INVALID_BIRTHDAY
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    delete:
+      tags:
+        - Profile
+      summary: Delete account
+      description: Authenticated user delete their account
+      operationId: deleteAccount
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, USER_NOT_FOUND
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+
+

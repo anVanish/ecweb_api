@@ -53,7 +53,7 @@ class AuthController{
         Users.findOneUsers({email}, {addPending: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.EMAIL_NOT_FOUND
-                if (!user.isVerified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
+                if (!user.isVerified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
                 if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
                 if (user.password !== password) throw ErrorCodeManager.INCORRECT_PASSWORD
                 
@@ -86,7 +86,7 @@ class AuthController{
             .then((user) => {
                 if (!user) throw ErrorCodeManager.EMAIL_NOT_FOUND
                 if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
-                if (!user.isVerified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
+                if (!user.isVerified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
 
                 //generate resetCode and send mail
                 const resetCode = tokenService.generateAccessToken({_id: user._id}, '30m')

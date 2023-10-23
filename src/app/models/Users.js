@@ -30,6 +30,7 @@ Users.statics.findUsers = function(filters={}, options={}){
 
 Users.statics.findOneUsers = function(filters={}, options={}){
     const userFilters = SoftDeleteFilter.userFilter(filters, options) 
+    console.log(userFilters)
     return this.findOne(userFilters)   
 }
 

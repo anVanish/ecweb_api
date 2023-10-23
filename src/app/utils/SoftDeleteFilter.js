@@ -25,8 +25,8 @@ class SoftDeleteFilter{
                     deletedAt: {$gte: twentyFourHoursAgo}
                 }
             ]
-        }
-
+            }
+            
         if (addPending) return {
             $and: [
                 filters,
