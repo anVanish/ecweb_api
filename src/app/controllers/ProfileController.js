@@ -64,6 +64,21 @@ class ProfileController{
             ErrorHandling.handleErrorResponse(res, error)
         })
     }
+    //PATCH /api/users/me/restore
+    restoreAccount(req, res){
+        const _id = req.user._id
+
+        Users.findOneAndRestoreUsers({_id}, {new: true, pending: true})
+        .then((user)=>{
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Account restored')
+            res.json(apiResponse)
+        })
+        .catch((error)=>{
+            ErrorHandling.handleErrorResponse(res, error)
+        })
+    }
 
 }
 

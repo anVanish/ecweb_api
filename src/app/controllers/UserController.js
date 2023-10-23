@@ -123,6 +123,22 @@ class UserController{
             ErrorHandling.handleErrorResponse(res, error)
         })
     }
+
+    //PATCH /api/users/:userId/restore
+    restoreUser(req, res){
+        const _id = req.params.userId
+        Users.findOneAndRestoreUsers({_id}, {deleted: true, new: true})
+        .then((user) => {
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            
+            const apiResponse = new ApiResponse();
+            apiResponse.setSuccess('User restored')
+            res.json(apiResponse)
+        })
+        .catch((error) => {
+            ErrorHandling.handleErrorResponse(res, error)
+        })
+    }
 }
 
 module.exports = new UserController()

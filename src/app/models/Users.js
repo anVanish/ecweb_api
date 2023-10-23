@@ -43,4 +43,9 @@ Users.statics.deleteUsersById = function(_id, options){
     return this.findByIdAndUpdate(_id, {isDeleted: true, deletedAt: new Date()}, options)
 }
 
+Users.statics.findOneAndRestoreUsers = function(filters, options){
+    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    return this.findOneAndUpdate(userFilters, {isDeleted: false}, options)
+}
+
 module.exports = mongoose.model('users', Users)
