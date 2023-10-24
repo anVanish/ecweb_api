@@ -139,6 +139,19 @@ class UserController{
             ErrorHandling.handleErrorResponse(res, error)
         })
     }
+
+    //DELETE /api/users/:userId/force
+    forceDeleteUser(req, res){
+        const _id = req.params.userId
+        Users.findByIdAndDelete(_id)
+        .then((user) => {
+            if(!user) throw ErrorCodeManager.USER_NOT_FOUND
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('User force deleted') 
+            res.json(apiResponse)
+        })
+        .catch((error) => ErrorHandling.handleErrorResponse(res, error))
+    }
 }
 
 module.exports = new UserController()

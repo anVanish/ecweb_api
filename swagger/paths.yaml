@@ -399,7 +399,47 @@ paths:
     delete:
       tags:
         - Users
-      summary: Delete user by id
+      summary: Delete user by id (able to restore)
+      description: Allow admin to delete user by id
+      operationId: deleteUsers
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '401': 
+          description: Unauthorized, UNAUTHORIZED
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{userId}/force:
+     delete:
+      tags:
+        - Users
+      summary: Delete user by id (force - unable to restore)
       description: Allow admin to delete user by id
       operationId: deleteUsers
       parameters:
@@ -450,6 +490,9 @@ paths:
           description: Id of user
           in: path
           example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID
       security:
         - BearerAuth: []
       responses:
@@ -552,7 +595,7 @@ paths:
     delete:
       tags:
         - Profile
-      summary: Delete account
+      summary: Delete account (restore within 24h)
       description: Authenticated user delete their account
       operationId: deleteAccount
       security:
@@ -582,7 +625,7 @@ paths:
       tags:
         - Profile
       summary: Restore account
-      description: Authenticated user restore their account
+      description: Authenticated user restore their account if they are deleted within 24h
       operationId: restoreAccount 
       security:
         - BearerAuth: []
