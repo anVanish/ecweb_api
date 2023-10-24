@@ -31,7 +31,7 @@ class AuthController{
                 const code = tokenService.generateAccessToken({_id: savedUser._id}, '1d')
                 const host = process.env.CLIENT_HOST ? process.env.CLIENT_HOST : 'http://localhost:3000'
                 const link = `${host}/verifyEmail/${code}`;
-                return MailService.sendMail(savedUser.email, 'Welcome to our site', link);
+                return MailService.sendMail(savedUser.email, 'Welcome to our site', link)
             })
             .then(() => {
                 apiResponse.setSuccess('Mail sent')
@@ -127,34 +127,60 @@ class AuthController{
     }
 
     //POST /api/auth/verify/email
-    verifyEmail(req, res){
+    async verifyEmail(req, res){
         const apiResponse = new ApiResponse()
         const code = req.body.code
 
-        if (!code) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_VERIFY_CODE)
+        try{
+            if (!code) throw ErrorCodeManager.MISSING_VERIFY_CODE
+            const decodedData = tokenService.decodeAccessToken(code)
+            if (!decodedData) throw ErrorCodeManager.INVALID_CODE
 
-        const decodedData = tokenService.decodeAccessToken(code)
-        if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_CODE)
+            const user = await Users.findOneUsers({_id: decodedData.user._id}, {addPending: true})
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+            if (user.isVerified){
+                apiResponse.setSuccess('Email already verified')
+                return res.json(apiResponse)
+            }
+            user.isVerified = true
+            await user.save()
+            apiResponse.setSuccess('Email verified')
+            res.json(apiResponse)
+        } catch (error){
+            ErrorHandling.handleErrorResponse(res, error)
+        }
+    }
 
-        Users.findOneUsers({_id: decodedData.user._id}, {addPending: true})
-            .then((user) => {
-                if (!user) throw ErrorCodeManager.USER_NOT_FOUND
-                if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
-                if (user.isVerified){
-                    apiResponse.setSuccess('Email already verified')
-                    return res.json(apiResponse)
-                }
+    //POST /api/auth/register/email
+    async registerSendMail(req, res){
+        //descirption: resend verify for user
+        const {email} = req.body
+        const apiResponse = new ApiResponse()
+        
+        try{
+            if (!email) throw ErrorCodeManager.MISSING_EMAIL
+            if (!InputValidator.validateEmail(email))throw ErrorCodeManager.INVALID_EMAIL
+            
+            const user = await Users.findOneUsers({email}, {addPending: true})
+           
+            if (!user) throw ErrorCodeManager.EMAIL_NOT_FOUND
+            if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+            if (user.isVerified){
+                apiResponse.setSuccess('Email already verified')
+                return res.json(apiResponse)
+            }
 
-                user.isVerified = true
-                return user.save()
-            })
-            .then(() => {
-                apiResponse.setSuccess('Email verified')
-                res.json(apiResponse)
-            })
-            .catch((error) => {
-                ErrorHandling.handleErrorResponse(res, error)
-            })
+            const code = tokenService.generateAccessToken({_id: user._id}, '1d')
+            const host = process.env.CLIENT_HOST ? process.env.CLIENT_HOST : 'http://localhost:3000'
+            const link = `${host}/verifyEmail/${code}`;
+            await MailService.sendMail(user.email, 'Welcome to our site', link)
+
+            apiResponse.setSuccess('Mail sent')
+            res.json(apiResponse)
+        } catch (error) {
+            ErrorHandling.handleErrorResponse(res, error)
+        }
     }
 }
 

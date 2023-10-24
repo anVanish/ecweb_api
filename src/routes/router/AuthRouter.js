@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authController = require('../../app/controllers/AuthController')
 
+router.post('/register/email', authController.registerSendMail)
 router.post('/register', authController.register)
 router.post('/login', authController.login)
 router.post('/forgot-password', authController.forgotPassword)

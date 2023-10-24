@@ -73,6 +73,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error' 
+  /auth/register/email:
+    post:
+      tags:
+        - Auth
+      summary: Resend verified email for register
+      description: Allow users to resend register verified code to their email
+      operationId: regiserResendEmail
+      requestBody: 
+        description: Email registered to system and need to verified
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: alltapduel@gmail.com         
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_EMAIL | INVALID_EMAIL
+        '403':
+          description: Forbidden, ACCOUNT_PENDING_DELETE
+        '404':
+          description: Not found, EMAIL_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
   /auth/forgot-password:
     post:
       tags:
@@ -441,7 +480,7 @@ paths:
         - Users
       summary: Delete user by id (force - unable to restore)
       description: Allow admin to delete user by id
-      operationId: deleteUsers
+      operationId: forceDeleteUsers
       parameters:
         - name: userId
           type: string
