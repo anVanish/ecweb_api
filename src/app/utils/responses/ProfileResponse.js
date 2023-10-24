@@ -2,6 +2,7 @@
 class ProfileResponse{
     constructor(user){
         if (user._id) this._id = user._id
+        if (user.username) this.username = user.username
         if (user.name) this.name = user.name
         if (user.email) this.email = user.email
         if (user.phone) this.phone = user.phone
