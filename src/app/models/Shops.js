@@ -8,7 +8,7 @@ const Shops = new Schema({
     description: {type: String},
     logo: {type: String},
     follower: {type: Number, default: 0},
-    createdAt: {type: Date, default: new Date()}
+    createdAt: {type: Date, default: new Date()},
 })
 
 module.exports = mongoose.model('shops', Shops)

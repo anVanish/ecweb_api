@@ -1,9 +1,9 @@
-const ApiResponse = require("../utils/ApiResponse")
-const ErrorCodeManager = require("../utils/ErrorCodeManager")
-const ErrorHandling = require("../utils/ErrorHandling")
-const InputValidator = require("../utils/InputValidator")
-const Users = require("../models/Users")
-const ProfileResponse = require('../utils/responses/ProfileResponse')
+const ApiResponse = require("../../utils/ApiResponse")
+const ErrorCodeManager = require("../../utils/ErrorCodeManager")
+const ErrorHandling = require("../../utils/ErrorHandling")
+const InputValidator = require("../../utils/InputValidator")
+const Users = require("../../models/Users")
+const ProfileResponse = require('../../utils/responses/ProfileResponse')
 
 
 class ProfileController{
@@ -23,11 +23,6 @@ class ProfileController{
         .catch((error) => {
             ErrorHandling.handleErrorResponse(res, error)
         })
-    }
-
-    //POST /api/users/me
-    registerSeller(req, res){
-        res.json('register seller')
     }
 
     //PATCH /api/users/me
@@ -65,6 +60,7 @@ class ProfileController{
             ErrorHandling.handleErrorResponse(res, error)
         })
     }
+    
     //PATCH /api/users/me/restore
     restoreAccount(req, res){
         const _id = req.user._id

@@ -1,8 +1,8 @@
-const ApiResponse = require("../utils/ApiResponse")
-const ErrorCodeManager = require("../utils/ErrorCodeManager")
-const ErrorHandling = require("../utils/ErrorHandling")
-const InputValidator = require("../utils/InputValidator")
-const Users = require("../models/Users")
+const ApiResponse = require("../../utils/ApiResponse")
+const ErrorCodeManager = require("../../utils/ErrorCodeManager")
+const ErrorHandling = require("../../utils/ErrorHandling")
+const InputValidator = require("../../utils/InputValidator")
+const Users = require("../../models/Users")
 
 class UserController{ 
 
