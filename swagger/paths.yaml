@@ -1,4 +1,5 @@
 paths:
+  #auth
   /auth/login:
     post:
       tags:
@@ -24,10 +25,14 @@ paths:
                     example: true
                   data: 
                     $ref: '#/components/schemas/LoginData'
-        '202':
-          description: Accepted, EMAIL_PENDING_VERIFY | ACCOUNT_PENDING_DELETE
         '400':
-          description: Bad request, MISSING_EMAIL | INVALID_EMAIL | MISSING_PASSWORD | EMAIL_NOT_FOUND | INCORRECT_PASSWORD
+          description: Bad request, MISSING_EMAIL | INVALID_EMAIL | MISSING_PASSWORD | INCORRECT_PASSWORD
+        '403':
+          description: Forbidden, EMAIL_NOT_VERIFIED | ACCOUNT_PENDING_DELETE
+        '404':
+          description: Not found, EMAIL_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
@@ -55,11 +60,15 @@ paths:
                     type: boolean
                     example: true
         '202': 
-          description: Accepted, EMAIL_PENDING_VERIFY | ACCOUNT_PENDING_DELETE
+          description: Accepted, EMAIL_PENDING_VERIFY
         '400':
           description: Bad request, MISSING_EMAIL | INVALID_EMAIL | MISSING_PASSWORD | PASSWORD_CONFIRM_INCORRECT
+        '403':
+          description: Forbidden, ACCOUNT_PENDING_DELETE
         '409': 
           description: Conflict, EMAIL_ALREADY_EXISTS
+        '500': 
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
@@ -79,8 +88,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: alltapduel@gmail.com
-              
+                  example: alltapduel@gmail.com         
       responses:
         '200':
           description: Register successfully
@@ -91,10 +99,14 @@ paths:
                   success:
                     type: boolean
                     example: true
-        '202':
-          description: Accepted, EMAIL_PENDING_VERIFY | ACCOUNT_PENDING_DELETE
         '400':
-          description: Bad request, MISSING_EMAIL | INVALID_EMAIL | EMAIL_NOT_FOUND
+          description: Bad request, MISSING_EMAIL | INVALID_EMAIL
+        '403':
+          description: Forbidden, EMAIL_NOT_VERIFIED | ACCOUNT_PENDING_DELETE
+        '404':
+          description: Not found, EMAIL_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
@@ -122,7 +134,11 @@ paths:
                     type: boolean
                     example: true
         '400':
-          description: Bad request, MISSING_PASSWORD | PASSWORD_CONFIRM_INCORRECT | MISSING_RESET_CODE | INVALID_RESET_CODE | USER_NOT_FOUND
+          description: Bad request, MISSING_PASSWORD | PASSWORD_CONFIRM_INCORRECT | MISSING_RESET_CODE | INVALID_RESET_CODE
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
@@ -152,19 +168,24 @@ paths:
                   success:
                     type: boolean
                     example: true
-        '202':
-          description: Accepted, ACCOUNT_PENDING_DELETE
         '400':
-          description: Bad request, MISSING_VERIFY_CODE | INVALID_CODE | USER_NOT_FOUND | EMAIL_ALREADY_VERIFY
+          description: Bad request, MISSING_VERIFY_CODE | INVALID_CODE
+        '403':
+          description: Forbidden, ACCOUNT_PENDING_DELETE
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  #users
   /users:
     get:
       tags:
-        - User
+        - Users
       summary: Find all users
       description: Allow admin view list of all users in system.
       operationId: findUsers
@@ -244,13 +265,15 @@ paths:
                           $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized, UNAUTHORIZED
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
       tags:
-        - User
+        - Users
       summary: Add new user
       description: Allow admin to add new user into system
       operationId: addUsers
@@ -278,6 +301,8 @@ paths:
           description: Unauthorized, UNAUTHORIZED
         '409':
           description: Conflict, EMAIL_ALREADY_EXISTS
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
@@ -285,7 +310,7 @@ paths:
   /users/{userId}:
     get:
       tags:
-        - User
+        - Users
       summary: Find users by id
       description: Allow admin user by using id.
       operationId: findUsersById
@@ -316,17 +341,19 @@ paths:
                     properties:
                       user:
                         $ref: '#/components/schemas/User'
-        '400':
-          description: Bad request, USER_NOT_FOUND
+        '404':
+          description: Not found, USER_NOT_FOUND
         '401': 
           description: Unauthorized, UNAUTHORIZED
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'    
     patch:
       tags:
-        - User
+        - Users
       summary: Update user by id
       description: Allow admin to update user by id
       operationId: updateUsers
@@ -360,14 +387,18 @@ paths:
                     type: boolean
                     example: true
         '400':
-          description: Bad request, MISSING_ID | INVALID_NAME | INVALID_PHONE | INVALID_GENDER | INVALID_BIRTHDAY | USER_NOT_FOUND
+          description: Bad request, MISSING_ID | INVALID_NAME | INVALID_PHONE | INVALID_GENDER | INVALID_BIRTHDAY
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
     delete:
       tags:
-        - User
+        - Users
       summary: Delete user by id
       description: Allow admin to delete user by id
       operationId: deleteUsers
@@ -394,14 +425,53 @@ paths:
                   success:
                     type: boolean
                     example: true
-        '400':
-          description: Bad request, USER_NOT_FOUND
+        '404':
+          description: Not found, USER_NOT_FOUND
         '401': 
           description: Unauthorized, UNAUTHORIZED
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /users/{userId}/restore:
+    patch:
+      tags:
+        - Users
+      summary: Restore deleted users
+      description: Allow admin to restore deleted users by userId
+      operationId: restoreUser
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User restored
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+  
+  #profile
   /users/me:
     get:
       tags:
@@ -426,10 +496,12 @@ paths:
                     properties:
                       user:
                         $ref: '#/components/schemas/User'
-        '202':
-          description: Accepted, ACCOUNT_PENDING_DELETE
         '401':
           description: Unauthorized, UNAUTHORIZED
+        '403':
+          description: Forbidden, ACCOUNT_PENDING_DELETE
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
@@ -439,8 +511,7 @@ paths:
         - Profile
       summary: Update profile
       description: Authenticated user update their profile
-      operationId: updateProfile
-      
+      operationId: updateProfile 
       requestBody: 
         description: Users infomaiton
         content:
@@ -464,17 +535,20 @@ paths:
                     properties:
                       user: 
                         $ref: '#/components/schemas/Profile'
-        '202':
-          description: Accepted, ACCOUNT_PENDING_DELETE
         '400':
           description: Bad request, USER_NOT_FOUND | INVALID_NAME | INVALID_PHONE | INVALID_GENDER | INVALID_BIRTHDAY
         '401':
           description: Unauthorized, UNAUTHORIZED
+        '403':
+          description: Forbidden, ACCOUNT_PENDING_DELETE
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-
     delete:
       tags:
         - Profile
@@ -493,13 +567,45 @@ paths:
                   success:
                     type: boolean
                     example: true
-        '400':
-          description: Bad request, USER_NOT_FOUND
         '401':
           description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Bad request, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error' 
-
+  /users/me/restore:
+    patch:
+      tags:
+        - Profile
+      summary: Restore account
+      description: Authenticated user restore their account
+      operationId: restoreAccount 
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Account restored
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      
+      
 

@@ -53,7 +53,7 @@ class AuthController{
         Users.findOneUsers({email}, {addPending: true})
             .then((user) => {
                 if (!user) throw ErrorCodeManager.EMAIL_NOT_FOUND
-                if (!user.isVerified) throw ErrorCodeManager.EMAIL_PENDING_VERIFY
+                if (!user.isVerified) throw ErrorCodeManager.EMAIL_NOT_VERIFIED
                 if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
                 if (user.password !== password) throw ErrorCodeManager.INCORRECT_PASSWORD
                 
@@ -140,7 +140,10 @@ class AuthController{
             .then((user) => {
                 if (!user) throw ErrorCodeManager.USER_NOT_FOUND
                 if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
-                if (user.isVerified) throw ErrorCodeManager.EMAIL_ALREADY_VERIFY
+                if (user.isVerified){
+                    apiResponse.setSuccess('Email already verified')
+                    return res.json(apiResponse)
+                }
 
                 user.isVerified = true
                 return user.save()

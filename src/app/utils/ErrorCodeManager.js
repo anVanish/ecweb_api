@@ -13,7 +13,6 @@ class ErrorCodeManager{
     static get USER_NOT_FOUND(){return "USER_NOT_FOUND"}
     static get CODE_EXPIRED(){return "CODE_EXPIRED"}
     static get INVALID_CODE(){return "INVALID_CODE"}
-    static get EMAIL_ALREADY_VERIFY(){return "EMAIL_ALREADY_VERIFY"}
 
     //login
     static get EMAIL_NOT_FOUND(){return "EMAIL_NOT_FOUND"}
@@ -47,33 +46,45 @@ class ErrorCodeManager{
 
     //errorCode status and defaul message
     static errorCodes = {
+        //ok
+        EMAIL_PENDING_VERIFY: {status: 202, message: "Email is pending to verify"},
+        
+        //bad request
         MISSING_EMAIL: { status: 400, message: "Email is required" },
         MISSING_PASSWORD: { status: 400, message: "Password is required" },
-        PASSWORD_CONFIRM_INCORRECT: { status: 400, message: "Confirmed password not correct" },
-        INVALID_EMAIL: { status: 400, message: "Email is Invalid" },
-        EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },
-        FAILURE_SENT_MAIL: { status: 400, message: "Mail failure to sent" },
-        EMAIL_ALREADY_VERIFY: { status: 400, message: "Email already verified" },
-        EMAIL_NOT_FOUND: { status: 400, message: "Email not found in the system" },
-        EMAIL_NOT_VERIFIED: { status: 400, message: "Email is not verified" },
-        INCORRECT_PASSWORD: { status: 400, message: "Password is incorrect" },
-        INVALID_NAME: { status: 400, message: "Name is invalid" },
-        INVALID_GENDER: { status: 400, message: "Gender is invalid" },
-        INVALID_PHONE: { status: 400, message: "Phone is invalid" },
-        INVALID_BIRTHDAY: { status: 400, message: "Birthday is invalid" },
-        UNAUTHORIZED: { status: 401, message: "UNAUTHORIZED" },
+        MISSING_ID: {status: 400, message: "Id is required"},
         MISSING_RESET_CODE: { status: 400, message: "ResetCode is required" },
-        INVALID_RESET_CODE: { status: 400, message: "ResetCode is invalid" },
+        INVALID_EMAIL: { status: 400, message: "Email is invalid format" },
+        INVALID_NAME: { status: 400, message: "Name is invalid format" },
+        INVALID_GENDER: { status: 400, message: "Gender is invalid format" },
+        INVALID_PHONE: { status: 400, message: "Phone is invalid format" },
+        INVALID_BIRTHDAY: { status: 400, message: "Birthday is invalid format" },
+        INVALID_RESET_CODE: { status: 400, message: "ResetCode is invalid format" },
+        INVALID_CODE: {status: 400, message: "Code is Invalid format"},
+        INCORRECT_PASSWORD: { status: 400, message: "Password is incorrect" },
+        PASSWORD_CONFIRM_INCORRECT: { status: 400, message: "Confirmed password is not correct" },
+        
+        //unauthorized
+        UNAUTHORIZED: { status: 401, message: "UNAUTHORIZED" },
+        
+        //forbidden
+        ACCOUNT_PENDING_DELETE: {status: 403, message: "Account is pending to delete"},
+        EMAIL_NOT_VERIFIED: {status: 403, message: "Email require to verify"},
+        
+        //not found
+        EMAIL_NOT_FOUND: { status: 404, message: "Email not found in the system" },
+        USER_NOT_FOUND: {status: 404, message: "User not found"},
+        NOT_FOUND: { status: 404, message: "404 Not found" },
+        
+        //conflict
+        EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },
+
+        //internal server error
+        FAILURE_SENT_MAIL: { status: 500, message: "Mail failure to sent" },
         DATABASE_ERROR: { status: 500, message: "Error in the database" },
         SERVER_ERROR: { status: 500, message: "Internal server error" },
-        NOT_FOUND: { status: 500, message: "404 Not found" },
-        MISSING_ID: {status: 400, message: "Id is missing"},
-        USER_NOT_FOUND: {status: 400, message: "User not found"},
-        INVALID_CODE: {status: 400, message: "Code is Invalid"},
-        ACCOUNT_PENDING_DELETE: {status: 202, message: "Account is pending to delete"},
-        EMAIL_PENDING_VERIFY: {status: 202, message: "Email is pending to verify"},
     }
-
+    
     static getHttpStatus(errorCode){
         const errorInfo = ErrorCodeManager.errorCodes[errorCode]
         return errorInfo ? errorInfo.status : 500
