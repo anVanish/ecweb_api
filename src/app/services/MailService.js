@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer')
+const dotenv = require('dotenv')
+dotenv.config()
 
 // const templatePath = path.join()
 class MailService{}
@@ -9,8 +11,8 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail',
     secure: true,
     auth: {
-        user: 'mailservice2309@gmail.com',
-        pass: 'imgp uuqy wqzq sxps'
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD
     }
 })
 
