@@ -1,7 +1,13 @@
 tags:
   - name: Auth
-    description: API for authenticate user
+    description: API operation for authenticate users
   - name: Users
-    description: API operation about user (for admin)
+    description: API operation about users (for admin)
+  - name: Shops
+    description: API operation about shop of users (for sellers)
   - name: Profile
-    description: API operation about profile of logged in user
+    description: API operation about profile (for logged in users)
+  - name: Categories
+    description: API operation about categories (for admin)
+  - name: Products
+    description: API operation about products

@@ -2,10 +2,10 @@ const ApiResponse = require('../utils/ApiResponse')
 const ErrorCodeManager = require('../utils/ErrorCodeManager')
 const InputValidator = require('../utils/InputValidator')
 const Users = require('../models/Users')
-const MailService = require('../utils/MailService')
+const MailService = require('../services/MailService')
 const ErrorHandling = require('../utils/ErrorHandling')
-const tokenService = require('../utils/TokenService')
-const ProfileResponse = require('../utils/ProfileResponse')
+const tokenService = require('../services/TokenService')
+const ProfileResponse = require('../utils/responses/ProfileResponse')
 
 class AuthController{
     //POST /api/auth/register
@@ -149,7 +149,7 @@ class AuthController{
                 return user.save()
             })
             .then(() => {
-                apiResponse.success = true
+                apiResponse.setSuccess('Email verified')
                 res.json(apiResponse)
             })
             .catch((error) => {

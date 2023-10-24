@@ -3,7 +3,8 @@ const ErrorCodeManager = require("../utils/ErrorCodeManager")
 const ErrorHandling = require("../utils/ErrorHandling")
 const InputValidator = require("../utils/InputValidator")
 const Users = require("../models/Users")
-const ProfileResponse = require('../utils/ProfileResponse')
+const ProfileResponse = require('../utils/responses/ProfileResponse')
+
 
 class ProfileController{
     //GET /api/users/me

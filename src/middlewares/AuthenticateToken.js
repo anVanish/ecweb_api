@@ -1,4 +1,4 @@
-const tokenService = require('../app/utils/TokenService')
+const tokenService = require('../app/services/TokenService')
 const ErrorCodeManager = require('../app/utils/ErrorCodeManager')
 const ErrorHandling = require('../app/utils/ErrorHandling')
 
