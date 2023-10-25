@@ -27,7 +27,7 @@ router.delete('/me', authenticateSeller, sellerShopController.deleteMyShop)
 //admin
 router.get('/', authenticateAdmin, adminShopController.listShop)
 router.get('/:shopId/full', authenticateAdmin, adminShopController.fullShopDetail)
-router.post('/', authenticateAdmin, adminShopController.addShop)
+router.post('/:userId', authenticateAdmin, adminShopController.addShop)
 router.patch('/:shopId', authenticateAdmin, adminShopController.updateShop)
 router.delete('/:shopId', authenticateAdmin, adminShopController.deleteShop)
 

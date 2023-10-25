@@ -70,10 +70,16 @@ InputValidator.invalidAddr = (addr) => {
     return null
 }
 
-InputValidator.invalidShop = (shop) => {
-    if (!shop.name) return ErrorCodeManager.INVALID_NAME
-    if (!shop.sellerId) return ErrorCodeManager.MISSING_ID
-    if (!shop.address || InputValidator.invalidAddr(shop.address)) return ErrorCodeManager.INVALID_ADDRESS
+InputValidator.invalidShop = (shop, {create=true} = {}) => {
+    if (create)
+    {
+        if (!shop.name) return ErrorCodeManager.INVALID_NAME
+        if (!shop.sellerId) return ErrorCodeManager.MISSING_ID
+        if (!shop.address || InputValidator.invalidAddr(shop.address)) return ErrorCodeManager.INVALID_ADDRESS
+    }
+    else {
+        if (shop.address && InputValidator.invalidAddr(shop.address)) return ErrorCodeManager.INVALID_ADDRESS
+    }
     return null
 }
 

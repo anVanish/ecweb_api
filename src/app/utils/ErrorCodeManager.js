@@ -48,6 +48,9 @@ class ErrorCodeManager{
     static get INVALID_ADDRESS(){return 'INVALID_ADDRESS'}
     static get ADDRESS_NOT_FOUND(){return 'ADDRESS_NOT_FOUND'}
 
+    //shop
+    static get SHOP_NOT_FOUND(){return 'SHOP_NOT_FOUND'}
+
     //errorCode status and defaul message
     static errorCodes = {
         //ok
@@ -81,6 +84,7 @@ class ErrorCodeManager{
         USER_NOT_FOUND: {status: 404, message: "User not found"},
         NOT_FOUND: { status: 404, message: "404 Not found" },
         ADDRESS_NOT_FOUND: { status: 404, message: "Address not found" },
+        SHOP_NOT_FOUND: { status: 404, message: "Shop not found" },
         
         //conflict
         EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },

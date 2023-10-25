@@ -10,7 +10,19 @@ class SellerShopController{
     //seller authentication
     //GET /api/shops/me
     getMyShop(req, res){
-        res.json('my shop')
+        const _id = req.user._id
+        Shops.findOne({sellerId: _id})
+        .then((shop) => {
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('')
+            apiResponse.data.shop = shop
+            res.json(apiResponse)
+        })
+        .catch((error) => {
+            ErrorHandling.handleErrorResponse(res, error)
+        })
     }
 
     //GET /api/shops/me/products
@@ -23,7 +35,6 @@ class SellerShopController{
         const _id = req.user._id
         req.body.sellerId = _id
         const apiResponse = new ApiResponse()
-        
         try{
             const error = InputValidator.invalidShop(req.body) 
             if (error) throw error
@@ -50,12 +61,35 @@ class SellerShopController{
 
     //PATCH /api/shops/me
     updateMyShop(req, res){
-        res.json('update my shop')
+        const {_id} = req.user
+        const error = InputValidator.invalidShop(req.body, {create: false})
+        if (error) return ErrorHandling.handleErrorResponse(res, error)
+
+        Shops.findOneAndUpdate({sellerId: _id}, req.body, {new: true})
+        .then((shop) => {
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Shop updated')
+            res.json(apiResponse)
+        })
+        .catch((error) => {
+            ErrorHandling.handleErrorResponse(res, error)
+        })
     }
 
     //DELETE /api/shops/me
     deleteMyShop(req, res){
-        res.json('delete my shop')
+        const {_id} = req.user
+        Shops.findOneAndDelete({sellerId: _id})
+        .then((shop) => {
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Shop deleted')
+            res.json(apiResponse)
+        })
+        .catch((error) => {
+            ErrorHandling.handleErrorResponse(res, error)
+        })
     }
 }
 
