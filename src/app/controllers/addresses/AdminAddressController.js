@@ -96,15 +96,19 @@ class AdminAddressController{
     deleteAddress(req, res){
         const { addressId, userId } = req.params
 
-        Users.updateOne({ _id: userId}, { $pull: { addresses: { _id: addressId } } })
-        .then((result) => {
-            if (result.nModified === 0) {
-            throw ErrorCodeManager.ADDRESS_NOT_FOUND
-            }
+        Users.findOne({_id: userId})
+        .then((user) => {
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            const addr = user.addresses.id(addressId)
+            if (!addr) throw ErrorCodeManager.ADDRESS_NOT_FOUND
 
-            const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('Address deleted')
-            res.json(apiResponse)
+            user.addresses = user.addresses.filter((address) => address._id !== addressId)
+            return user.save()
+        })
+        .then(() => {
+            const apiResponse = new ApiResponse();
+            apiResponse.setSuccess('Address deleted');
+            res.json(apiResponse);
         })
         .catch((error) => {
             ErrorHandling.handleErrorResponse(res, error)

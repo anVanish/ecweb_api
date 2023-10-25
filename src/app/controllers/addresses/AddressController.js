@@ -99,19 +99,23 @@ class AddressController{
         const _id = req.user._id
         const { addressId } = req.params
 
-        Users.updateOne({ _id}, { $pull: { addresses: { _id: addressId } } })
-        .then((result) => {
-            if (result.nModified === 0) {
-            throw ErrorCodeManager.ADDRESS_NOT_FOUND;
-            }
-    
+        Users.findOne({_id})
+        .then((user) => {
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            const addr = user.addresses.id(addressId)
+            if (!addr) throw ErrorCodeManager.ADDRESS_NOT_FOUND
+
+            user.addresses = user.addresses.filter((address) => address._id != addressId)
+            return user.save()
+        })
+        .then(() => {
             const apiResponse = new ApiResponse();
             apiResponse.setSuccess('Address deleted');
             res.json(apiResponse);
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error);
-        });
+            ErrorHandling.handleErrorResponse(res, error)
+        })
     }
 }
 

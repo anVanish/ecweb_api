@@ -114,6 +114,57 @@ components:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY1MmNmZTAzMGE2OTNmZDNlYzA2MGFmNyJ9LCJpYXQiOjE2OTc0NDc0ODMsImV4cCI6MTY5NzQ0OTI4M30.tRYfwoMXz6chNkZrrnCMD6lpEvDZwraHbL7wm5Mj-Ro
     
+    Addresses:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: ObjectID
+          example: 6538c4c1cc978c2ebaba4ef5
+        name:
+          type: string
+          description: name of addresses owner
+          example: "Vanish"
+        phone:
+          type: string
+          description: phone of addresses owner
+          example: '0123456789'
+        city:
+          type: string
+          example: Ho Chi Minh
+        district:
+          type: string
+          example: TP. Thu Duc
+        ward:
+          type: string
+          example: P. Long Thanh My
+        detail: 
+          type: string
+          example: so 62, duong 1A
+    AddAddresses:
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of addresses owner
+          example: "Vanish"
+        phone:
+          type: string
+          description: phone of addresses owner
+          example: '0123456789'
+        city:
+          type: string
+          example: Ho Chi Minh
+        district:
+          type: string
+          example: TP. Thu Duc
+        ward:
+          type: string
+          example: P. Long Thanh My
+        detail: 
+          type: string
+          example: so 62, duong 1A
+
     # data
     LoginData:
       type: object

@@ -7,6 +7,8 @@ tags:
     description: API operation about shop of users (for sellers)
   - name: Profile
     description: API operation about profile (for logged in users)
+  - name: Addresses
+    description: API operation about addresses of users
   - name: Categories
     description: API operation about categories (for admin)
   - name: Products

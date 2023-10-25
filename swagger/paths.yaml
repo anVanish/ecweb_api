@@ -111,7 +111,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    
   /auth/forgot-password:
     post:
       tags:
@@ -552,7 +551,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error' 
-  
+
   #profile
   /users/me:
     get:
@@ -689,5 +688,465 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
       
-      
-
+  #addresses
+  /users/{userId}/addresses:
+    get:
+      tags:
+        - Addresses
+      summary: Get all addresses of user (admin)
+      description: Allow admin to get all addresses of the user by user id
+      operationId: getAddresses
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID  
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      addresses:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Addresses'
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Addresses
+      summary: Add address (admin)
+      description: Allow admin to add new address for user by user id
+      operationId: addAddresses
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID  
+      requestBody:
+        description: All fields are required to add new address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAddresses'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '400':
+          description: Bad request, INVALID_NAME | INVALID_PHONE | INVALID_ADDRESS
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /addresses/{addressId}/{userId}:
+    get:
+      tags:
+        - Addresses
+      summary: Get address (admin)
+      description: Allow admin to get address by user id and addressesId
+      operationId: getAddress
+      parameters:
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of address
+          in: path
+          example: 6538c4c1cc978c2ebaba4ef5
+          schema:
+            type: string
+            format: ObjectID
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID  
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      address:
+                        $ref: '#/components/schemas/Addresses'  
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Addresses
+      summary: Update address (admin)
+      description: Allow admin to update address by user id and addressesId
+      operationId: updateAddress
+      parameters:
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of address
+          in: path
+          example: 6538c4c1cc978c2ebaba4ef5
+          schema:
+            type: string
+            format: ObjectID
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: Update fields
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAddresses'
+        
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '400':
+          description: Bad request, INVALID_ADDRESS | INVALID_NAME | INVALID_PHONE
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Addresses
+      summary: Delete address (admin)
+      description: Allow admin to delete address by user id and addressesId
+      operationId: deleteAddress
+      parameters:
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of address
+          in: path
+          example: 6538c4e2cc978c2ebaba4efb
+          schema:
+            type: string
+            format: ObjectID
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user
+          in: path
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+            format: ObjectID  
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /users/me/addresses:
+    get:
+      tags:
+        - Addresses
+      summary: Get my addresses (user)
+      description: Authenticated user get all addresses 
+      operationId: getMyAddresses
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      addresses:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Addresses'
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Addresses
+      summary: Add address (user)
+      description: Authenticated user add new address
+      operationId: addMyAddress
+      requestBody:
+        description: All fields are required to add new address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAddresses'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '400':
+          description: Bad request, INVALID_NAME | INVALID_PHONE | INVALID_ADDRESS
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /addresses/{addressId}/me:
+    get:
+      tags:
+        - Addresses
+      summary: Get address (user)
+      description: Authenticated user get address by addressesId
+      operationId: getMyAddress
+      parameters:
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of address
+          in: path
+          example: 6538c4c1cc978c2ebaba4ef5
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      address:
+                        $ref: '#/components/schemas/Addresses'  
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Addresses
+      summary: Update address (user)
+      description: Authenticated user update address by addressesId
+      operationId: updateMyAddress
+      parameters:
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of address
+          in: path
+          example: 6538c4c1cc978c2ebaba4ef5
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: Update fields
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAddresses'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '400':
+          description: Bad request, INVALID_ADDRESS | INVALID_NAME | INVALID_PHONE
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Addresses
+      summary: Delete address (user)
+      description: Authenticated user delete address by addressesId
+      operationId: deleteMyAddress
+      parameters:
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of address
+          in: path
+          example: 6538c4e2cc978c2ebaba4efb
+          schema:
+            type: string
+            format: ObjectID  
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized, UNAUTHORIZED
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
