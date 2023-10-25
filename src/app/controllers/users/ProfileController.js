@@ -76,7 +76,7 @@ class ProfileController{
             ErrorHandling.handleErrorResponse(res, error)
         })
     }
-
+    
 }
 
 module.exports = new ProfileController()

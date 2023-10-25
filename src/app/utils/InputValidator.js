@@ -61,6 +61,14 @@ InputValidator.invalidUser = (user) => {
     return null
 }
 
+InputValidator.invalidAddr = (addr) => {
+    if (!addr.name || !InputValidator.validateName(addr.name)) return ErrorCodeManager.INVALID_NAME
+    if (!addr.phone || !InputValidator.validatePhone(addr.phone)) return ErrorCodeManager.INVALID_PHONE
+    if (!addr.city || !addr.district || !addr.ward || !addr.detail) return ErrorCodeManager.INVALID_ADDRESS
+
+    return null
+}
+
 
 
 module.exports = InputValidator

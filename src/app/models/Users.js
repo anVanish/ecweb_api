@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const SoftDeleteFilter = require('../utils/SoftDeleteFilter')
+const Address = require('./Address')
 
 const Users = new Schema({
     name: {type: String},
@@ -14,11 +15,14 @@ const Users = new Schema({
     phone: {type: String},
     gender: {type: String},
     birthday: {type: Date},
+    addresses: [Address],
     isSeller: {type: Boolean, default: false},
     isAdmin: {type: Boolean, default: false},
     isDeleted: {type: Boolean},
     createdAt: {type: Date, default: new Date()},
     deletedAt: {type: Date},
+}, {
+    timestamps: true,
 })
 
 //find users with default is not delete in database

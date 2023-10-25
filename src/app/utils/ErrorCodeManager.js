@@ -44,6 +44,10 @@ class ErrorCodeManager{
     static get ACCOUNT_PENDING_DELETE(){return "ACCOUNT_PENDING_DELETE"}
     static get EMAIL_PENDING_VERIFY(){return "EMAIL_PENDING_VERIFY"}
 
+    //addr
+    static get INVALID_ADDRESS(){return 'INVALID_ADDRESS'}
+    static get ADDRESS_NOT_FOUND(){return 'ADDRESS_NOT_FOUND'}
+
     //errorCode status and defaul message
     static errorCodes = {
         //ok
@@ -63,6 +67,7 @@ class ErrorCodeManager{
         INVALID_CODE: {status: 400, message: "Code is Invalid format"},
         INCORRECT_PASSWORD: { status: 400, message: "Password is incorrect" },
         PASSWORD_CONFIRM_INCORRECT: { status: 400, message: "Confirmed password is not correct" },
+        INVALID_ADDRESS: {status: 400, message: "Address is Invalid"},
         
         //unauthorized
         UNAUTHORIZED: { status: 401, message: "UNAUTHORIZED" },
@@ -72,9 +77,10 @@ class ErrorCodeManager{
         EMAIL_NOT_VERIFIED: {status: 403, message: "Email require to verify"},
         
         //not found
-        EMAIL_NOT_FOUND: { status: 404, message: "Email not found in the system" },
+        EMAIL_NOT_FOUND: { status: 404, message: "Email not found" },
         USER_NOT_FOUND: {status: 404, message: "User not found"},
         NOT_FOUND: { status: 404, message: "404 Not found" },
+        ADDRESS_NOT_FOUND: { status: 404, message: "Address not found" },
         
         //conflict
         EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },

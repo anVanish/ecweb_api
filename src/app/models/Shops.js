@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
+const Address = require('./Address')
 
 const Shops = new Schema({
     sellerId: {type: ObjectId, required: true, ref: 'users'},
@@ -8,7 +9,9 @@ const Shops = new Schema({
     description: {type: String},
     logo: {type: String},
     follower: {type: Number, default: 0},
-    createdAt: {type: Date, default: new Date()},
+    address: Address, 
+}, {
+    timestamps: true,
 })
 
 module.exports = mongoose.model('shops', Shops)
