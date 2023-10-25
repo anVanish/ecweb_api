@@ -62,6 +62,7 @@ InputValidator.invalidUser = (user) => {
 }
 
 InputValidator.invalidAddr = (addr) => {
+    if (!addr) return ErrorCodeManager.INVALID_ADDRESS
     if (!addr.name || !InputValidator.validateName(addr.name)) return ErrorCodeManager.INVALID_NAME
     if (!addr.phone || !InputValidator.validatePhone(addr.phone)) return ErrorCodeManager.INVALID_PHONE
     if (!addr.city || !addr.district || !addr.ward || !addr.detail) return ErrorCodeManager.INVALID_ADDRESS
@@ -69,6 +70,12 @@ InputValidator.invalidAddr = (addr) => {
     return null
 }
 
+InputValidator.invalidShop = (shop) => {
+    if (!shop.name) return ErrorCodeManager.INVALID_NAME
+    if (!shop.sellerId) return ErrorCodeManager.MISSING_ID
+    if (!shop.address || InputValidator.invalidAddr(shop.address)) return ErrorCodeManager.INVALID_ADDRESS
+    return null
+}
 
 
 module.exports = InputValidator

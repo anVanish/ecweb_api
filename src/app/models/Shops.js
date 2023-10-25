@@ -9,7 +9,7 @@ const Shops = new Schema({
     description: {type: String},
     logo: {type: String},
     follower: {type: Number, default: 0},
-    address: Address, 
+    address: {type: Address, required: true}, 
 }, {
     timestamps: true,
 })
