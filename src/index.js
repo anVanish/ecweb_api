@@ -24,4 +24,5 @@ route(app)
 //404 error
 app.use(NotFoundError)
 
-app.listen(port, ()=> console.log(`Web api started at http://localhost:${port}/api`))
+app.listen(port, ()=> console.log(`Web api started at http://localhost:${port}/api
+Documentation available at http://localhost:${port}/api/docs`))

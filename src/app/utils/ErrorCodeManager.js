@@ -51,6 +51,11 @@ class ErrorCodeManager{
     //shop
     static get SHOP_NOT_FOUND(){return 'SHOP_NOT_FOUND'}
 
+    //category
+    static get MISSING_CATEGORY_NAME(){return 'MISSING_CATEGORY_NAME'}
+    static get MISSING_CATEGORY_IMAGE(){return 'MISSING_CATEGORY_IMAGE'}
+    static get CATEGORY_NOT_FOUND(){return 'CATEGORY_NOT_FOUND'}
+
     //errorCode status and defaul message
     static errorCodes = {
         //ok
@@ -71,6 +76,8 @@ class ErrorCodeManager{
         INCORRECT_PASSWORD: { status: 400, message: "Password is incorrect" },
         PASSWORD_CONFIRM_INCORRECT: { status: 400, message: "Confirmed password is not correct" },
         INVALID_ADDRESS: {status: 400, message: "Address is Invalid"},
+        MISSING_CATEGORY_NAME: {status: 400, message: "Category name is required"},
+        MISSING_CATEGORY_IMAGE: {status: 400, message: "Categroy image is required"},
         
         //unauthorized
         UNAUTHORIZED: { status: 401, message: "UNAUTHORIZED" },
@@ -85,6 +92,7 @@ class ErrorCodeManager{
         NOT_FOUND: { status: 404, message: "404 Not found" },
         ADDRESS_NOT_FOUND: { status: 404, message: "Address not found" },
         SHOP_NOT_FOUND: { status: 404, message: "Shop not found" },
+        CATEGORY_NOT_FOUND: { status: 404, message: "Category not found" },
         
         //conflict
         EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },

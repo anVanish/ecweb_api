@@ -83,5 +83,12 @@ InputValidator.invalidShop = (shop, {create=true} = {}) => {
     return null
 }
 
+InputValidator.invalidCate = (category) => {
+    if (!category) return ErrorCodeManager.MISSING_CATEGORY_NAME
+    if (!category.name) return ErrorCodeManager.MISSING_CATEGORY_NAME
+    if (!category.image) return ErrorCodeManager.MISSING_CATEGORY_IMAGE
+
+    return null
+}
 
 module.exports = InputValidator

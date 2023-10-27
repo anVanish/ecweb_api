@@ -165,6 +165,63 @@ components:
           type: string
           example: so 62, duong 1A
 
+    Shop:
+      properties:
+        _id:
+          type: string
+          format: ObjectID
+          example: 65393c347287bc3e74eead08
+        sellerId:
+          type: string
+          format: ObjectID
+          example: 6530fb27ee98ba62f7728d71
+        name:
+          type: string
+          example: khanhan.shop
+        description:
+          type: string
+          example: Welcome to khanhan.shop
+        logo:
+          type: string
+          example: image_logo_url
+        follower:
+          type: number
+          example: 0
+        address:
+          $ref: '#/components/schemas/Addresses'
+        createdAt:
+          type: date
+          example: 2023-10-25T16:03:00.844Z
+    UpdateShop:
+      properties:
+        name:
+          type: string
+          example: khanhan.shop
+        description:
+          type: string
+          example: Welcome to khanhan.shop
+        logo:
+          type: string
+          example: image_logo_url
+        address:
+          $ref: '#/components/schemas/Addresses'
+    AddShop:
+      properties:
+        sellerId:
+          type: string
+          example: 65393c347287bc3e74eead08
+        name:
+          type: string
+          example: khanhan.shop
+        description:
+          type: string
+          example: Welcome to khanhan.shop
+        logo:
+          type: string
+          example: image_logo_url
+        address:
+          $ref: '#/components/schemas/Addresses'
+
     # data
     LoginData:
       type: object

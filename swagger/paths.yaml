@@ -224,7 +224,7 @@ paths:
     get:
       tags:
         - Users
-      summary: Find all users
+      summary: Find all users (admin)
       description: Allow admin view list of all users in system.
       operationId: findUsers
       parameters:
@@ -312,7 +312,7 @@ paths:
     post:
       tags:
         - Users
-      summary: Add new user
+      summary: Add new user (admin)
       description: Allow admin to add new user into system
       operationId: addUsers
       requestBody: 
@@ -349,7 +349,7 @@ paths:
     get:
       tags:
         - Users
-      summary: Find users by id
+      summary: Find users by id (admin)
       description: Allow admin user by using id.
       operationId: findUsersById
       parameters:
@@ -392,7 +392,7 @@ paths:
     patch:
       tags:
         - Users
-      summary: Update user by id
+      summary: Update user by id (admin)
       description: Allow admin to update user by id
       operationId: updateUsers
       parameters:
@@ -437,7 +437,7 @@ paths:
     delete:
       tags:
         - Users
-      summary: Delete user by id (able to restore)
+      summary: Delete user by id (able to restore) (admin)
       description: Allow admin to delete user by id
       operationId: deleteUsers
       parameters:
@@ -477,7 +477,7 @@ paths:
      delete:
       tags:
         - Users
-      summary: Delete user by id (force - unable to restore)
+      summary: Delete user by id (force - unable to restore) (admin)
       description: Allow admin to delete user by id
       operationId: forceDeleteUsers
       parameters:
@@ -517,7 +517,7 @@ paths:
     patch:
       tags:
         - Users
-      summary: Restore deleted users
+      summary: Restore deleted users (admin)
       description: Allow admin to restore deleted users by userId
       operationId: restoreUser
       parameters:
@@ -557,7 +557,7 @@ paths:
     get:
       tags:
         - Profile
-      summary: Find profile
+      summary: Find my profile (user)
       description: Authenticated user find their profile
       operationId: findMe
       security: 
@@ -590,7 +590,7 @@ paths:
     patch:
       tags:
         - Profile
-      summary: Update profile
+      summary: Update profile (user)
       description: Authenticated user update their profile
       operationId: updateProfile 
       requestBody: 
@@ -633,7 +633,7 @@ paths:
     delete:
       tags:
         - Profile
-      summary: Delete account (restore within 24h)
+      summary: Delete account (restore within 24h) (user)
       description: Authenticated user delete their account
       operationId: deleteAccount
       security:
@@ -662,7 +662,7 @@ paths:
     patch:
       tags:
         - Profile
-      summary: Restore account
+      summary: Restore account (user)
       description: Authenticated user restore their account if they are deleted within 24h
       operationId: restoreAccount 
       security:
@@ -1150,3 +1150,343 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   
+  #shops
+  /shops:
+    get:
+      tags:
+        - Shops
+      summary: Get list of shop (admin)
+      description: Allow admin to get list shops
+      operationId: getShops
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      shops:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Shop'  
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /shops/{userId}:
+    post: 
+      tags:
+        - Shops
+      summary: Add shop for user (admin)
+      description: Allow admin to add shop for user by userId
+      operationId: addShop
+      parameters:
+        - name: userId
+          type: string
+          required: true
+          explode: true
+          description: Id of user need to add shop
+          in: path
+          example: 65393c347287bc3e74eead08
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: All fields need to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddShop'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':  
+          description: Bad request, INVALID_ADDRESS
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /shops/{shopId}:
+    get:
+      tags:
+        - Shops
+      summary: Get shop info
+      description: Allow to get shop info by shopId
+      operationId: getShop
+      parameters:
+        - name: shopId
+          type: string
+          required: true
+          explode: true
+          description: Id of shop
+          in: path
+          example: 65393c347287bc3e74eead08
+          schema:
+            type: string
+            format: ObjectID
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      shop:
+                        $ref: '#/components/schemas/Shop'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch: 
+      tags:
+        - Shops
+      summary: Update shop info (admin)
+      description: Allow admin to update shop info by shopId
+      operationId: updateShop
+      parameters:
+        - name: shopId
+          type: string
+          required: true
+          explode: true
+          description: Id of shop
+          in: path
+          example: 65393c347287bc3e74eead08
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: All fields can be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShop'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':  
+          description: Bad request, INVALID_ADDRESS
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete: 
+      tags:
+        - Shops
+      summary: Delete shop (admin)
+      description: Allow admin to delete shop by shopId
+      operationId: deleteShop
+      parameters:
+        - name: shopId
+          type: string
+          required: true
+          explode: true
+          description: Id of shop
+          in: path
+          example: 65394341db39b5fd654738ba
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /shops/me:
+    get:
+      tags:
+        - Shops
+      summary: Get my shop (seller)
+      description: Authenticated user get their shop's info
+      operationId: getMyShop
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      shop:
+                        $ref: '#/components/schemas/Shop'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    post: 
+      tags:
+        - Shops
+      summary: Register to be a seller (seller)
+      description: Authenticated user register to be a seller
+      operationId: addMyShop
+      requestBody:
+        description: All fields need to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShop'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':  
+          description: Bad request, INVALID_ADDRESS
+        '404':
+          description: Not found, USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch: 
+      tags:
+        - Shops
+      summary: Update shop info (seller)
+      description: Authenticated user update their shop
+      operationId: updateMyShop
+      requestBody:
+        description: All fields can be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShop'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':  
+          description: Bad request, INVALID_ADDRESS
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete: 
+      tags:
+        - Shops
+      summary: Delete shop (seller)
+      description: Authenticated user delete their shop
+      operationId: deleteMyShop
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':  
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+     
+
+
+   
+
+
+
+
+
+
+

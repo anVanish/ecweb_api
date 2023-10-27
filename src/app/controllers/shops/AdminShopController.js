@@ -78,8 +78,10 @@ class AdminShopController{
         const _id = req.params.shopId
         const error = InputValidator.invalidShop(req.body, {create: false})
         if (error) return ErrorHandling.handleErrorResponse(res, error)
+        
+        const {sellerId, ...other} = req.body
 
-        Shops.findOneAndUpdate({_id}, req.body, {new: true})
+        Shops.findOneAndUpdate({_id}, other, {new: true})
         .then((shop) => {
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
             const apiResponse = new ApiResponse()
