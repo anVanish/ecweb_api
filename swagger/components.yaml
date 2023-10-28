@@ -222,6 +222,47 @@ components:
         address:
           $ref: '#/components/schemas/Addresses'
 
+    SubCategories:
+      properties:
+        _id:
+          type: ObjectID
+          example: 653b417da4622bd29d455f9d
+        name:
+          type: string
+          example: Quần áo
+    Categories:
+      properties:
+        _id:
+          type: ObjectID
+          example: 653b417da4622bd29d455f9d
+        name:
+          type: string
+          example: Quần áo
+        image:
+          type: string
+          example: image_link
+        subCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubCategories'
+    AddSubCategories:
+      properties:
+        name:
+          type: string
+          example: Quần áo
+    AddCategories:
+      properties:
+        name:
+          type: string
+          example: Quần áo
+        image:
+          type: string
+          example: image_link
+        subCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddSubCategories'
+    
     # data
     LoginData:
       type: object

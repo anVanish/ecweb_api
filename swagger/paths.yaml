@@ -1479,7 +1479,211 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-     
+  
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Get list of all categories
+      operationId: getCategories
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Categories'
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    post:
+      tags:
+        - Categories
+      summary: Add category (admin)
+      description: Add new category
+      operationId: addCategory
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCategories'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Categories'
+        '400':
+          description: Bad reequest, MISSING_CATEGORY_NAME | MISSING_CATEGORY_IMAGE
+        '404':
+          description: Not found, CATEGORY_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    
+  /categories/{categoryId}:
+    get:
+      tags:
+        - Categories
+      summary: Get category detail (admin)
+      description: Get info of category by categoryId
+      operationId: getCategory
+      parameters:
+        - name: categoryId
+          type: string
+          required: true
+          explode: true
+          description: Id of category
+          in: path
+          example: 653b417da4622bd29d455f9d
+          schema:
+            type: string
+            format: ObjectID
+
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Categories'
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    put:
+      tags:
+        - Categories
+      summary: Update category (admin)
+      description: Update category by categoryId
+      parameters:
+        - name: categoryId
+          type: string
+          required: true
+          explode: true
+          description: Id of category
+          in: path
+          example: 653b417da4622bd29d455f9d
+          schema:
+            type: string
+            format: ObjectID
+      operationId: updateCategory
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Can update all items in subCategories by providing all object with name (not included in requestBody will be deleted)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCategories'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Categories'
+        '400':
+          description: Bad reequest, MISSING_CATEGORY_NAME | MISSING_CATEGORY_IMAGE
+        '404':
+          description: Not found, CATEGORY_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    delete:
+      tags:
+        - Categories
+      summary: Delete category (admin)
+      description: Delete category by categoryId
+      parameters:
+        - name: categoryId
+          type: string
+          required: true
+          explode: true
+          description: Id of category
+          in: path
+          example: 653b417da4622bd29d455f9d
+          schema:
+            type: string
+            format: ObjectID
+      operationId: updateCategory
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Categories'
+        '404':
+          description: Not found, CATEGORY_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    
 
 
    

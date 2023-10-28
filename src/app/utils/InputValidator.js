@@ -1,21 +1,44 @@
+const joi = require('joi')
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 const nameRegex = /^[\p{L}\p{M}\s.'-]+$/u
 const phoneRegex = /^0\d{9}$/
 const genderRegex = /^(male|female)?$/i
 const birthdayRegex = /^(\d{4})-(\d{2})-(\d{2})$/
-
+const objectIdRegex = /^[0-9a-fA-F]{24}$/
 const ErrorCodeManager = require('./ErrorCodeManager')
 
-class InputValidator{}  
+const variationSchema = joi.object({
+    name: joi.string().required(),
+    price: joi.number().required().min(1000),
+    stock: joi.number().required().min(0),
+});
+const productJoi = joi.object({
+    shopId: joi.string().hex().length(24).required(),
+    name: joi.string().required(),
+    images: joi.array().items(joi.string()).min(1).required(),
+    category: joi.object({
+        categoryId: joi.string().hex().length(24).required(),
+        subCategoryId: joi.string().hex().length(24).required(),
+    }).required(),
+    variations: joi.array().items(variationSchema).min(1).required(),
+    weight: joi.number().min(1).required(), 
+    packageSize: joi.object({
+        width: joi.number().min(1).required(), 
+        length: joi.number().min(1).required(),
+        height: joi.number().min(1).required(),
+    }).required(),
+})
 
+class InputValidator{}  
+InputValidator.validateId = (id) => {
+    return objectIdRegex.test(id)
+}
 InputValidator.validateEmail = (email)=>{
     return emailRegex.test(email)
 }
-
 InputValidator.validateName = (name) => {
     return nameRegex.test(name)
 }
-
 InputValidator.validateBirthDay = (birthDay) => {
     if (!birthdayRegex.test(birthDay)) return false
 
@@ -31,16 +54,14 @@ InputValidator.validateBirthDay = (birthDay) => {
     if (age > 200 || birthDate > currentDate) return false
     return true
 }
-
 InputValidator.validatePhone = (phone) => {
     return phoneRegex.test(phone)
 }
-
-//general
 InputValidator.validateGender = (gender) => {
     return genderRegex.test(gender)
 }
 
+//general
 InputValidator.invalidAuth = (auth) =>{
     if (!auth.email)
         return ErrorCodeManager.MISSING_EMAIL
@@ -52,7 +73,6 @@ InputValidator.invalidAuth = (auth) =>{
         return ErrorCodeManager.PASSWORD_CONFIRM_INCORRECT
     return null
 }
-
 InputValidator.invalidUser = (user) => {
     if (user.name && !InputValidator.validateName(user.name)) return ErrorCodeManager.INVALID_NAME
     if (user.phone && !InputValidator.validatePhone(user.phone)) return ErrorCodeManager.INVALID_PHONE
@@ -60,7 +80,6 @@ InputValidator.invalidUser = (user) => {
     if (user.birthday && !InputValidator.validateBirthDay(user.birthday)) return ErrorCodeManager.INVALID_BIRTHDAY
     return null
 }
-
 InputValidator.invalidAddr = (addr) => {
     if (!addr) return ErrorCodeManager.INVALID_ADDRESS
     if (!addr.name || !InputValidator.validateName(addr.name)) return ErrorCodeManager.INVALID_NAME
@@ -69,7 +88,6 @@ InputValidator.invalidAddr = (addr) => {
 
     return null
 }
-
 InputValidator.invalidShop = (shop, {create=true} = {}) => {
     if (create)
     {
@@ -82,13 +100,36 @@ InputValidator.invalidShop = (shop, {create=true} = {}) => {
     }
     return null
 }
-
 InputValidator.invalidCate = (category) => {
     if (!category) return ErrorCodeManager.MISSING_CATEGORY_NAME
     if (!category.name) return ErrorCodeManager.MISSING_CATEGORY_NAME
     if (!category.image) return ErrorCodeManager.MISSING_CATEGORY_IMAGE
 
     return null
+}
+InputValidator.invalidProduct = (product) => {
+    if (!product) return ErrorCodeManager.MISSING_PRODUCT_NAME
+    
+    const result = productJoi.validate(product)
+    if (!result.error) return null
+    
+    const paths = result.error.details[0].path
+    const path = paths[paths.length - 1]
+
+    if (path === 'shopId') return ErrorCodeManager.INVALID_SHOP_ID
+    if (path === 'name' && !paths.includes('variations')) return ErrorCodeManager.MISSING_PRODUCT_NAME
+    if (path === 'images') return ErrorCodeManager.MISSING_PRODUCT_IMAGE
+    if (path === 'category' || path === 'categoryId' || path === 'subCategoryId') return ErrorCodeManager.INVALID_PRODUCT_CATEGORY
+    if (path === 'variations') return ErrorCodeManager.INVALID_PRODUCT_VARIATIONS
+    if (path === 'name') return ErrorCodeManager.MISSING_PRODUCT_VARIATION_NAME
+    if (path === 'price') return ErrorCodeManager.INVALID_PRODUCT_VARIATION_PRICE
+    if (path === 'stock') return ErrorCodeManager.INVALID_PRODUCT_VARIATION_STOCK
+    if (path === 'weight') return ErrorCodeManager.INVALID_PRODUCT_WEIGHT
+    if (path === 'packageSize' || path === 'width') return ErrorCodeManager.INVALID_PRODUCT_WIDTH
+    if (path === 'length') return ErrorCodeManager.INVALID_PRODUCT_LENGTH
+    if (path === 'height') return ErrorCodeManager.INVALID_PRODUCT_HEIGHT
+
+    return result.error.details
 }
 
 module.exports = InputValidator

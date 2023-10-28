@@ -57,6 +57,9 @@ class CategoryController{
     updateCategory(req, res){
         const _id = req.params.categoryId
         
+        const error = InputValidator.invalidCate(req.body)
+        if (error) return ErrorHandling.handleErrorResponse(res, error)
+
         Category.findOneAndUpdate({_id}, req.body, {new: true})
         .then((updatedCategory) => {
             if (!updatedCategory) throw ErrorCodeManager.CATEGORY_NOT_FOUND

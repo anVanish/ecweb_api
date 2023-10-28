@@ -39,6 +39,8 @@ class ErrorCodeManager{
 
     //require id
     static get MISSING_ID(){return "MISSING_ID"}
+    static get INVALID_PARAMS_ID(){return "INVALID_PARAMS_ID"}
+
 
     //delete account
     static get ACCOUNT_PENDING_DELETE(){return "ACCOUNT_PENDING_DELETE"}
@@ -56,6 +58,22 @@ class ErrorCodeManager{
     static get MISSING_CATEGORY_IMAGE(){return 'MISSING_CATEGORY_IMAGE'}
     static get CATEGORY_NOT_FOUND(){return 'CATEGORY_NOT_FOUND'}
 
+    //product
+    static get MISSING_PRODUCT_NAME(){return 'MISSING_PRODUCT_NAME'}
+    static get MISSING_PRODUCT_IMAGE(){return 'MISSING_PRODUCT_IMAGE'}
+    static get INVALID_PRODUCT_CATEGORY(){return 'INVALID_PRODUCT_CATEGORY'}
+    static get INVALID_PRODUCT_SUBCATEGORY(){return 'INVALID_CATEGORY_SUBCATEGORY'}
+    static get INVALID_PRODUCT_WEIGHT(){return 'INVALID_PRODUCT_WEIGHT'}
+    static get INVALID_PRODUCT_WIDTH(){return 'INVALID_PRODUCT_WIDTH'}
+    static get INVALID_PRODUCT_HEIGHT(){return 'INVALID_PRODUCT_HEIGHT'}
+    static get INVALID_PRODUCT_LENGTH(){return 'INVALID_PRODUCT_LENGTH'}
+    static get MISSING_PRODUCT_VARIATION_NAME(){return 'MISSING_PRODUCT_VARIATION_NAME'}
+    static get INVALID_PRODUCT_VARIATIONS(){return 'INVALID_PRODUCT_VARIATIONS'}
+    static get INVALID_PRODUCT_VARIATION_PRICE(){return 'INVALID_PRODUCT_VARIATION_PRICE'}
+    static get INVALID_PRODUCT_VARIATION_STOCK(){return 'INVALID_PRODUCT_VARIATION_STOCK'}
+    static get INVALID_SHOP_ID(){return 'INVALID_SHOP_ID'}
+    static get PRODUCT_NOT_FOUND(){return 'PRODUCT_NOT_FOUND'}
+    
     //errorCode status and defaul message
     static errorCodes = {
         //ok
@@ -77,7 +95,20 @@ class ErrorCodeManager{
         PASSWORD_CONFIRM_INCORRECT: { status: 400, message: "Confirmed password is not correct" },
         INVALID_ADDRESS: {status: 400, message: "Address is Invalid"},
         MISSING_CATEGORY_NAME: {status: 400, message: "Category name is required"},
-        MISSING_CATEGORY_IMAGE: {status: 400, message: "Categroy image is required"},
+        MISSING_CATEGORY_IMAGE: {status: 400, message: "Category image is required"},
+        MISSING_PRODUCT_NAME: {status: 400, message: "Product name is required"},
+        MISSING_PRODUCT_IMAGE: {status: 400, message: "Product image is required"},
+        INVALID_PRODUCT_CATEGORY: {status: 400, message: "Categroy of product is invalid"},
+        INVALID_PRODUCT_SUBCATEGORY: {status: 400, message: "SubCategroy of product is invalid"},
+        INVALID_PRODUCT_WIDTH: {status: 400, message: "Product width is invalid, must be number and higher than 0"},
+        INVALID_PRODUCT_HEIGHT: {status: 400, message: "Product height is invalid, must be number and higher than 0"},
+        INVALID_PRODUCT_LENGTH: {status: 400, message: "Product length is invalid, must be number and higher than 0"},
+        MISSING_PRODUCT_VARIATION_NAME: {status: 400, message: "Variation name is required"},
+        INVALID_PRODUCT_VARIATIONS: {status: 400, message: "Product must be at least 1 variation"},
+        INVALID_PRODUCT_VARIATION_PRICE: {status: 400, message: "Product price is invalid, must be number and higher than 1000"},
+        INVALID_PRODUCT_VARIATION_STOCK: {status: 400, message: "Product stock is invalid, must be number and higher than or equal 0"},
+        INVALID_PARAMS_ID: {status: 400, message: "Params id is invalid, format Mongodb ObjectId is required"},
+        INVALID_SHOP_ID: {status: 400, message: "ShopId is invalid, id is required and format Mongodb ObjectId is required"},
         
         //unauthorized
         UNAUTHORIZED: { status: 401, message: "UNAUTHORIZED" },
@@ -93,6 +124,7 @@ class ErrorCodeManager{
         ADDRESS_NOT_FOUND: { status: 404, message: "Address not found" },
         SHOP_NOT_FOUND: { status: 404, message: "Shop not found" },
         CATEGORY_NOT_FOUND: { status: 404, message: "Category not found" },
+        PRODUCT_NOT_FOUND: { status: 404, message: "Product not found" },
         
         //conflict
         EMAIL_ALREADY_EXISTS: { status: 409, message: "Email already exist" },
