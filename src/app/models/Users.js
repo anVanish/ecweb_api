@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const SoftDeleteFilter = require('../utils/SoftDeleteFilter')
+const softDeleteFilter = require('../utils/SoftDeleteFilter')
 const Address = require('./Address')
 
 const Users = new Schema({
@@ -27,22 +27,22 @@ const Users = new Schema({
 
 //find users with default is not delete in database
 Users.statics.countUsers = function(filters={}, options={}){
-    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    const userFilters = softDeleteFilter(filters, options)
     return this.countDocuments(userFilters)
 }
 
 Users.statics.findUsers = function(filters={}, options={}){
-    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    const userFilters = softDeleteFilter(filters, options)
     return this.find(userFilters)
 }
 
 Users.statics.findOneUsers = function(filters={}, options={}){
-    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    const userFilters = softDeleteFilter(filters, options)
     return this.findOne(userFilters)   
 }
 
 Users.statics.findOneAndUpdateUsers = function(filters, updateData={}, options={}){
-    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    const userFilters = softDeleteFilter(filters, options)
     return this.findOneAndUpdate(userFilters, updateData, options)
 }
 
@@ -51,7 +51,7 @@ Users.statics.deleteUsersById = function(_id, options){
 }
 
 Users.statics.findOneAndRestoreUsers = function(filters, options){
-    const userFilters = SoftDeleteFilter.userFilter(filters, options)
+    const userFilters = softDeleteFilter(filters, options)
     return this.findOneAndUpdate(userFilters, {isDeleted: false}, options)
 }
 

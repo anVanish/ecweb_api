@@ -3,6 +3,7 @@ const InputValidator = require("../../utils/InputValidator")
 const ErrorHandling = require('../../utils/ErrorHandling')
 const Users = require('../../models/Users')
 const Shops = require('../../models/Shops')
+const Products = require('../../models/Product')
 const ApiResponse = require("../../utils/ApiResponse")
 const ProfileResponse = require('../../utils/responses/ProfileResponse')
 
@@ -26,8 +27,30 @@ class SellerShopController{
     }
 
     //GET /api/shops/me/products
-    myShopProduct(req, res){
-        res.json('products of my shop')
+    async myShopProduct(req, res){
+        const _id = req.user._id
+        let limit = 10, page = 1
+        const deleted = (req.query.deleted === 'true')
+        const all = (req.query.all === 'true')
+        if (req.query.page) page = parseInt(req.query.page)
+        if (req.query.limit) limit = parseInt(req.query.limit)
+
+        try {
+            const shop = await Shops.findOne({sellerId: _id})
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+
+            const products = await Products.findProducts({shopId: shop._id}, {deleted, all, new: true})
+                .skip((page - 1) * limit)
+                .limit(limit)
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('')
+            apiResponse.data.total = await Products.countProducts({shopId: shop._id}, {deleted, all})
+            apiResponse.data.length = products.length
+            apiResponse.data.products = products
+            res.json(apiResponse)
+        } catch(error) {
+            ErrorHandling.handleErrorResponse(res, error)
+        }
     }
 
     //POST /api/shops/me

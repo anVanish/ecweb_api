@@ -28,9 +28,8 @@ class SellerProductController{
         }
     }
 
-    //PATCH /api/products/:productId/me
+    //PUT /api/products/:productId/me
     async updateMyProduct(req, res){
-        res.json('update product in my shop')
         const _id = req.user._id
         const productId = req.params.productId
         try{
@@ -54,11 +53,61 @@ class SellerProductController{
     }
 
     //DELETE /api/products/:productId/me
-    deleteMyProduct(req, res){
-        res.json('delete product in my shop')
+    async deleteMyProduct(req, res){
+        const _id = req.user._id
+        const productId = req.params.productId
+        try{
+            if (!InputValidator.validateId(productId)) throw ErrorCodeManager.INVALID_PARAMS_ID
+            const shop = await Shops.findOne({sellerId: _id})
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            
+            const product = await Products.findOneAndDeleteProducts({_id: productId, shopId: shop._id}, {new: true})
+            if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
+
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Product deleted')
+            res.json(apiResponse)
+        } catch(error) {
+            ErrorHandling.handleErrorResponse(res, error)
+        }
     }
 
-    //GET /api/products/:productId/me
+    //PATCH /api/products/:productId/me/restore
+    async restoreMyProducts(req, res){
+        const sellerId = req.user._id
+        const _id = req.params.productId
+        try{
+            const shop = await Shops.findOne({sellerId}, {new: true})
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            
+            const product = await Products.findOneAndRestoreProducts({shopId: shop._id, _id})
+            if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
+            
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Product restored')
+            res.json(apiResponse)
+        } catch(error) {
+            ErrorHandling.handleErrorResponse(res, error)
+        }
+    }
+
+    //DELETE /api/products/:porductId/me/force
+    async forceDeleteMyProducts(req, res){
+        const sellerId = req.user._id
+        const _id = req.params.productId
+
+        try {
+            const shop = await Shops.findOne({sellerId})
+            if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            const product = await Products.findOneAndDelete({_id, shopId: shop._id})
+            if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('Product deleted')
+            res.json(apiResponse)
+        } catch(error) {
+            ErrorHandling.handleErrorResponse(res, error)
+        }
+    }
 }
 
 module.exports = new SellerProductController()

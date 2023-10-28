@@ -13,10 +13,14 @@ router.use(authenticateToken)
 //seller
 router.post('/me', authenticateSeller, sellerProductController.addMyProduct)
 router.put('/:productId/me', authenticateSeller, sellerProductController.updateMyProduct)
+router.patch('/:productId/me/restore', authenticateSeller, sellerProductController.restoreMyProducts)
+router.delete('/:productId/me/force', authenticateSeller, sellerProductController.forceDeleteMyProducts)
 router.delete('/:productId/me', authenticateSeller, sellerProductController.deleteMyProduct)
 //admin
 router.post('/:shopId', authenticateAdmin, adminProductController.addProduct)
 router.put('/:productId', authenticateAdmin, adminProductController.updateProduct)
+router.patch('/:productId/restore', authenticateAdmin, adminProductController.restoreProduct)
+router.delete('/:productId/force', authenticateAdmin, adminProductController.forceDeleteProduct)
 router.delete('/:productId', authenticateAdmin, adminProductController.deleteProduct)
 
 

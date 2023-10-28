@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const slugify = require('slugify')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
+const softDeleteFilter = require('../utils/SoftDeleteFilter')
+
 
 const Variation = new Schema({
     name: {type: String, required: true},
@@ -38,5 +40,30 @@ const Products = new Schema({
 }, {
     timestamps: true,
 })
+
+Products.statics.countProducts = function(filters={}, options={}){
+    const productFilters = softDeleteFilter(filters, options)
+    return this.countDocuments(productFilters)
+}
+
+Products.statics.findProducts = function(filters={}, options={}){
+    const productFilters = softDeleteFilter(filters, options)
+    return this.find(productFilters)
+}
+
+Products.statics.findOneProducts = function(filters={}, options={}){
+    const productFilters = softDeleteFilter(filters, options)
+    return this.findOne(productFilters)
+}
+
+Products.statics.findOneAndDeleteProducts = function(filters={}, options){
+    const productFilters = softDeleteFilter(filters, {deleted: false})
+    return this.findOneAndUpdate(productFilters, {isDeleted: true, deletedAt: new Date()}, options)
+}
+
+Products.statics.findOneAndRestoreProducts = function(filters, options){
+    const productFilters = softDeleteFilter(filters, {deleted: true})
+    return this.findOneAndUpdate(productFilters, {isDeleted: false}, options)
+}
 
 module.exports = mongoose.model('products', Products)
