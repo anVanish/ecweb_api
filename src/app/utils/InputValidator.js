@@ -74,6 +74,7 @@ InputValidator.invalidAuth = (auth) =>{
     return null
 }
 InputValidator.invalidUser = (user) => {
+    if (!user.name || user.phone || user.gender || user.birthday) return ErrorCodeManager.INVALID_NAME
     if (user.name && !InputValidator.validateName(user.name)) return ErrorCodeManager.INVALID_NAME
     if (user.phone && !InputValidator.validatePhone(user.phone)) return ErrorCodeManager.INVALID_PHONE
     if (user.gender && !InputValidator.validateGender(user.gender)) return ErrorCodeManager.INVALID_GENDER
