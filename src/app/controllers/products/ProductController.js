@@ -32,8 +32,9 @@ class ProductController{
 
     //GET /api/products/:slug
     detailProduct(req, res){
+        const all = (req.query.all === 'true')
         const slug = req.params.slug
-        Products.findOne({slug})
+        Products.findOneProducts({slug}, {all})
         .populate('shopId', 'name follower')
         .then((product) => {
             if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND

@@ -12,7 +12,6 @@ class AdminProductController{
     async addProduct(req, res){
         const _id = req.params.shopId
         try {
-            if (!InputValidator.validateId(_id)) throw ErrorCodeManager.INVALID_PARAMS_ID
             const error = InputValidator.invalidProduct(req.body)
             if (error) throw error
 
@@ -87,7 +86,8 @@ class AdminProductController{
     forceDeleteProduct(req, res){
         const _id = req.params.productId
         Products.findOneAndDelete({_id})
-        .then(() => {
+        .then((product) => {
+            if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Product deleted')
             res.json(apiResponse)

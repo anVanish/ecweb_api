@@ -1548,7 +1548,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'   
-    
   /categories/{categoryId}:
     get:
       tags:
@@ -1684,7 +1683,682 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'   
     
-
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Get list of all products
+      description: Allow to get list of all products
+      operationId: getProducts
+      parameters:
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: all
+          in: query
+          description: The flag to get all products (include deleted products)
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: deleted
+          in: query
+          description: The flag to get only deleted products
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: search
+          in: query
+          description: Allows the client to specify a search string for filtering products based on name
+          required: false
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'  
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /shops/{shopId}/products:
+    get:
+      tags:
+        - Products
+      summary: Get list of all products of specific shop
+      description: Allow to get list of all products by shopId
+      operationId: getShopProducts
+      parameters:
+        - name: shopId
+          type: string
+          required: true
+          explode: true
+          description: Id of shop
+          in: path
+          example: 65393c347287bc3e74eead08
+          schema:
+            type: string
+            format: ObjectID
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: all
+          in: query
+          description: The flag to get all products (include deleted products)
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: deleted
+          in: query
+          description: The flag to get only deleted products
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: search
+          in: query
+          description: Allows the client to specify a search string for filtering products based on name
+          required: false
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{shopId}:
+    post:
+      tags:
+        - Products
+      summary: Add new product to shop (admin)
+      description: Allow admin to add new product to shop by shopId
+      operationId: addProduct
+      parameters:
+        - name: shopId
+          type: string
+          required: true
+          explode: true
+          description: Id of shop
+          in: path
+          example: 65393c347287bc3e74eead08
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: Field shopId, name, images, category, categoryId, subCategoryId, variations, weight, packageSize is required
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProducts'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_PRODUCT_NAME | MISSING_PRODUCT_IMAGE | INVALID_PRODUCT_CATEGORY | MISSING_PRODUCT_VARIATION_NAME | INVALID_PRODUCT_VARIATION_PRICE | INVALID_PRODUCT_VARIATION_STOCK | INVALID_PRODUCT_WEIGHT | INVALID_PRODUCT_WIDTH | INVALID_PRODUCT_LENGTH | INVALID_PRODUCT_HEIGHT
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{slug}:
+    get:
+      tags:
+        - Products
+      summary: Get detail of products
+      description: Allow to get detail of product by productId
+      operationId: getProduct
+      parameters:
+        - name: slug
+          type: string
+          required: true
+          explode: true
+          description: Slug of product
+          in: path
+          example: iphone-13-promax-653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+        - name: all
+          in: query
+          description: The flag to get products (include deleted or not)
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    properties:
+                      product:
+                        $ref: '#/components/schemas/Products'  
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{productId}:  
+    put:
+      tags:
+        - Products
+      summary: Update product (admin)
+      description: Allow admin to update product by product Id
+      operationId: updateProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: Field name, images, category, categoryId, subCategoryId, variations, weight, packageSize is required
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProducts'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_PRODUCT_NAME | MISSING_PRODUCT_IMAGE | INVALID_PRODUCT_CATEGORY | MISSING_PRODUCT_VARIATION_NAME | INVALID_PRODUCT_VARIATION_PRICE | INVALID_PRODUCT_VARIATION_STOCK | INVALID_PRODUCT_WEIGHT | INVALID_PRODUCT_WIDTH | INVALID_PRODUCT_LENGTH | INVALID_PRODUCT_HEIGHT
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    delete:
+      tags:
+        - Products
+      summary: Delete product (able to restore) (admin)
+      description: Allow admin to delete product by productId
+      operationId: deleteProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{productId}/restore:
+    patch:
+      tags:
+        - Products
+      summary: Restore deleted product (admin)
+      description: Allow admin to restore deleted product by productId
+      operationId: restoreProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{productId}/force:
+    delete:
+      tags:
+        - Products
+      summary: Force delete product (unable to restore) (admin)
+      description: Allow admin to force delete product to shop by productId
+      operationId: forceDeleteProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab3
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  # seller product
+  /shops/me/products:
+    get:
+      tags:
+        - Products
+      summary: Get list of all products of my shop (seller)
+      description: Allow seller to get list of all products of their shop
+      operationId: getMyProducts
+      parameters:
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: all
+          in: query
+          description: The flag to get all products (include deleted products)
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: deleted
+          in: query
+          description: The flag to get only deleted products
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            enum:
+              - true
+        - name: search
+          in: query
+          description: Allows the client to specify a search string for filtering products based on name
+          required: false
+          explode: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/me:  
+    post:
+      tags:
+        - Products
+      summary: Add product to my shop (seller)
+      description: Allow seller to add new product to shop
+      operationId: addMyProduct
+      requestBody:
+        description: Field name, images, category, categoryId, subCategoryId, variations, weight, packageSize is required
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProducts'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_PRODUCT_NAME | MISSING_PRODUCT_IMAGE | INVALID_PRODUCT_CATEGORY | MISSING_PRODUCT_VARIATION_NAME | INVALID_PRODUCT_VARIATION_PRICE | INVALID_PRODUCT_VARIATION_STOCK | INVALID_PRODUCT_WEIGHT | INVALID_PRODUCT_WIDTH | INVALID_PRODUCT_LENGTH | INVALID_PRODUCT_HEIGHT
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{productId}/me:
+    put:
+      tags:
+        - Products
+      summary: Update my product (seller)
+      description: Allow seller to update their product
+      operationId: updateMyProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+      requestBody:
+        description: Field name, images, category, categoryId, subCategoryId, variations, weight, packageSize is required
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProducts'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, MISSING_PRODUCT_NAME | MISSING_PRODUCT_IMAGE | INVALID_PRODUCT_CATEGORY | MISSING_PRODUCT_VARIATION_NAME | INVALID_PRODUCT_VARIATION_PRICE | INVALID_PRODUCT_VARIATION_STOCK | INVALID_PRODUCT_WEIGHT | INVALID_PRODUCT_WIDTH | INVALID_PRODUCT_LENGTH | INVALID_PRODUCT_HEIGHT
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+    delete:
+      tags:
+        - Products
+      summary: Delete product (able to restore) (seller)
+      description: Allow seller to delete product by productId
+      operationId: deleteMyProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{productId}/me/restore:
+    patch:
+      tags:
+        - Products
+      summary: Restore deleted product (seller)
+      description: Allow seller to restore deleted product by productId
+      operationId: restoreMyProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab5
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /products/{productId}/me/force:
+    delete:
+      tags:
+        - Products
+      summary: Force delete product (unable to restore) (seller)
+      description: Allow seller to force delete product by productId
+      operationId: forceDeleteMyProduct
+      parameters:
+        - name: productId
+          type: string
+          required: true
+          explode: true
+          description: Id of product
+          in: path
+          example: 653d6e41e0d271bb861bbab3
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Not found, PRODUCT_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  
 
    
 

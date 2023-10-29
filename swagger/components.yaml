@@ -263,6 +263,208 @@ components:
           items:
             $ref: '#/components/schemas/AddSubCategories'
     
+    Variation:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Dung lượng 64GB"
+        price:
+          type: number
+          example: 12000000
+        stock:
+          type: number
+          example: 27
+    Products:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: objectId
+          example: "65393c347287bc3e74eead08"
+        name:
+          type: string
+          example: "Iphone 13 Pro Max"
+        images:
+          type: array
+          items:
+            type: string
+          example:
+            - "apple.jpg"
+        category:
+          type: object
+          properties:
+            categoryId:
+              type: string
+              format: objectId
+              example: "653b587cb5533ab59df6508a"
+            subCategoryId:
+              type: string
+              format: objectId
+              example: "653b587cb5533ab59df6508b"
+        slug:
+          type: string
+          example: "iphone-13-promax-653d6e41e0d271bb861bbab5"
+        description:
+          type: string
+          example: "This is a product description."
+        brand:
+          type: string
+          example: "Brand Name"
+        variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variation'
+          example:
+            - name: "Dung lượng 64GB"
+              price: 20000000
+              stock: 12
+            - name: "Dung lượng 128GB"
+              price: 24000000
+              stock: 12
+        status:
+          type: string
+          enum:
+            - new
+            - used
+          example: "new"
+        weight:
+          type: number
+          example: 10
+        packageSize:
+          type: object
+          properties:
+            width:
+              type: number
+              example: 12
+            length:
+              type: number
+              example: 12
+            height:
+              type: number
+              example: 12
+        isDeleted:
+          type: boolean
+          example: false
+        deletedAt:
+          type: string
+          format: date-time
+    AddProducts:
+      type: object
+      properties:
+        shopId:
+          type: string
+          format: objectId
+          example: "65393c347287bc3e74eead08"
+        name:
+          type: string
+          example: "Iphone 13 Pro Max"
+        images:
+          type: array
+          items:
+            type: string
+          example:
+            - "apple.jpg"
+        category:
+          type: object
+          properties:
+            categoryId:
+              type: string
+              format: objectId
+              example: "653b587cb5533ab59df6508a"
+            subCategoryId:
+              type: string
+              format: objectId
+              example: "653b587cb5533ab59df6508b"
+        description:
+          type: string
+          example: "This is a product description."
+        brand:
+          type: string
+          example: "Brand Name"
+        variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variation'
+          example:
+            - name: "Dung lượng 64GB"
+              price: 20000000
+              stock: 12
+            - name: "Dung lượng 128GB"
+              price: 24000000
+              stock: 12
+        weight:
+          type: number
+          example: 10
+        packageSize:
+          type: object
+          properties:
+            width:
+              type: number
+              example: 12
+            length:
+              type: number
+              example: 12
+            height:
+              type: number
+              example: 12
+    UpdateProducts:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Iphone 13 Pro Max"
+        images:
+          type: array
+          items:
+            type: string
+          example:
+            - "apple.jpg"
+        category:
+          type: object
+          properties:
+            categoryId:
+              type: string
+              format: objectId
+              example: "653b587cb5533ab59df6508a"
+            subCategoryId:
+              type: string
+              format: objectId
+              example: "653b587cb5533ab59df6508b"
+        description:
+          type: string
+          example: "This is a product description."
+        brand:
+          type: string
+          example: "Brand Name"
+        variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variation'
+          example:
+            - name: "Dung lượng 64GB"
+              price: 20000000
+              stock: 12
+            - name: "Dung lượng 128GB"
+              price: 24000000
+              stock: 12
+        weight:
+          type: number
+          example: 10
+        packageSize:
+          type: object
+          properties:
+            width:
+              type: number
+              example: 12
+            length:
+              type: number
+              example: 12
+            height:
+              type: number
+              example: 12
+    
+    
     # data
     LoginData:
       type: object

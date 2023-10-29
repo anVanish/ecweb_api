@@ -9,7 +9,7 @@ const ProfileResponse = require('../../utils/responses/ProfileResponse')
 
 class SellerShopController{
     //seller authentication
-    //GET /api/shops/me
+    //GET /api/shops/me/products
     getMyShop(req, res){
         const _id = req.user._id
         Shops.findOne({sellerId: _id})

@@ -27,7 +27,7 @@ const productJoi = joi.object({
         length: joi.number().min(1).required(),
         height: joi.number().min(1).required(),
     }).required(),
-})
+}).options({ allowUnknown: true })
 
 class InputValidator{}  
 InputValidator.validateId = (id) => {
