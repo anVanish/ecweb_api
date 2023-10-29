@@ -17,8 +17,8 @@ const productJoi = joi.object({
     name: joi.string().required(),
     images: joi.array().items(joi.string()).min(1).required(),
     category: joi.object({
-        categoryId: joi.string().hex().length(24).required(),
-        subCategoryId: joi.string().hex().length(24).required(),
+        categorySlug: joi.string().required(),
+        subCategorySlug: joi.string().required(),
     }).required(),
     variations: joi.array().items(variationSchema).min(1).required(),
     weight: joi.number().min(1).required(), 
@@ -119,7 +119,7 @@ InputValidator.invalidProduct = (product) => {
     if (path === 'shopId') return ErrorCodeManager.INVALID_SHOP_ID
     if (path === 'name' && !paths.includes('variations')) return ErrorCodeManager.MISSING_PRODUCT_NAME
     if (path === 'images') return ErrorCodeManager.MISSING_PRODUCT_IMAGE
-    if (path === 'category' || path === 'categoryId' || path === 'subCategoryId') return ErrorCodeManager.INVALID_PRODUCT_CATEGORY
+    if (path === 'category' || path === 'categorySlug' || path === 'subCategorySlug') return ErrorCodeManager.INVALID_PRODUCT_CATEGORY
     if (path === 'variations') return ErrorCodeManager.INVALID_PRODUCT_VARIATIONS
     if (path === 'name') return ErrorCodeManager.MISSING_PRODUCT_VARIATION_NAME
     if (path === 'price') return ErrorCodeManager.INVALID_PRODUCT_VARIATION_PRICE

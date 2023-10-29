@@ -3,6 +3,7 @@ const ErrorHandling = require('../../utils/ErrorHandling')
 const Shops = require('../../models/Shops')
 const Products = require('../../models/Product')
 const ApiResponse = require("../../utils/ApiResponse")
+const {filterProducts} = require('../../utils/SearchFilters')
 
 
 class ShopController{
@@ -25,22 +26,18 @@ class ShopController{
 
     //GET /api/shops/:shopId/products
     async shopProduct(req, res){
-        let page = 1, limit = 10, search = ''
-        const deleted = (req.query.deleted === 'true')
-        const all = (req.query.all === 'true')
-        if (req.query.page) page = parseInt(req.query.page)
-        if (req.query.limit) limit = parseInt(req.query.limit)
-        if (req.query.search) search = req.query.search
-        
         const shopId = req.params.shopId
+        const {pagination, filters, sort, options} = filterProducts(req.query, {shopId})
+        
         try {
-            const products = await Products.findProducts({shopId}, {deleted, all})
-                .skip((page - 1) * limit)
-                .limit(limit)
+            const products = await Products.findProducts(filters, options)
+                .sort(sort)
+                .skip((pagination.page - 1) * pagination.limit)
+                .limit(pagination.limit)
             
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('')
-            apiResponse.data.total = await Products.countProducts({shopId}, {deleted, all})
+            apiResponse.data.total = await Products.countProducts(filters, options)
             apiResponse.data.length = products.length
             apiResponse.data.products = products
 

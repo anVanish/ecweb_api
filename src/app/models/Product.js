@@ -18,8 +18,8 @@ const Products = new Schema({
         {type: String, required: true}
     ],
     category: {
-        categoryId: {type: ObjectId, required: true},
-        subCategoryId: {type: ObjectId, required: true}
+        categorySlug: {type: String, required: true},
+        subCategorySlug: {type: String, required: true}
     },
     slug: {type: String, unique: true, default: function(){
         return slugify(`${this.name}-${this._id}`, {lower: true})
@@ -39,6 +39,16 @@ const Products = new Schema({
     deletedAt: {type: Date},
 }, {
     timestamps: true,
+})
+
+Products.virtual('priceRange').get(function() {
+    if (this.variations && this.variations.length > 0) {
+        const prices = this.variations.map((variation) => variation.price);
+        const minPrice = Math.min(...prices)
+        const maxPrice = Math.max(...prices)
+        return { minPrice, maxPrice }
+    }
+    return { minPrice: 0, maxPrice: 0 }
 })
 
 Products.statics.countProducts = function(filters={}, options={}){
