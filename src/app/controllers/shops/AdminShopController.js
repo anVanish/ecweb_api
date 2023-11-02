@@ -1,6 +1,5 @@
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
 const InputValidator = require("../../utils/InputValidator")
-const ErrorHandling = require('../../utils/ErrorHandling')
 const Shops = require('../../models/Shops')
 const Users = require('../../models/Users')
 const ApiResponse = require("../../utils/ApiResponse")
@@ -10,7 +9,7 @@ const ProfileResponse = require('../../utils/responses/ProfileResponse')
 class AdminShopController{
     //admin authentication
     //GET /api/shops/
-    async listShop(req, res){
+    async listShop(req, res, next){
         let page = 1
         let limit = 10
         let search = ''
@@ -35,17 +34,17 @@ class AdminShopController{
             apiResponse.data.shops = shops
             res.json(apiResponse)
         } catch (error){
-            ErrorCodeManager.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //GET /api/shops/:shopId/full
-    fullShopDetail(req, res){
+    fullShopDetail(req, res, next){
         res.json('full shop detail')
     }
 
     //POST /api/shops/:userId
-    async addShop(req, res){
+    async addShop(req, res, next){
         const _id = req.params.userId
         req.body.sellerId = _id
         const apiResponse = new ApiResponse()
@@ -69,15 +68,15 @@ class AdminShopController{
             apiResponse.data.user = new ProfileResponse(user)
             res.json(apiResponse)
         } catch (error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //PATCH /api/shops/:shopId
-    updateShop(req, res){
+    updateShop(req, res, next){
         const _id = req.params.shopId
         const error = InputValidator.invalidShop(req.body, {create: false})
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
         
         const {sellerId, ...other} = req.body
 
@@ -89,12 +88,12 @@ class AdminShopController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE /api/shops/:shopId
-    deleteShop(req, res){
+    deleteShop(req, res, next){
         const _id = req.params.shopId
         Shops.findOneAndDelete({ _id})
         .then((shop) => {
@@ -104,7 +103,7 @@ class AdminShopController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 }

@@ -2,9 +2,10 @@ const express = require('express')
 const morgan = require('morgan')
 const route = require('./routes')
 const db = require('./config/db')
-const NotFoundError = require('./middlewares/NotFoundError')
+const NotFoundError = require('./middlewares/notFoundHandling')
 const modifyCors = require('./middlewares/ModifyCors')
 const dotenv = require('dotenv')
+const errorHandling = require('./middlewares/errorHandling')
 
 dotenv.config()
 
@@ -18,9 +19,12 @@ app.use(morgan('combined'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
+
 //routes
 route(app)
 
+//handle error
+app.use(errorHandling)
 //404 error
 app.use(NotFoundError)
 

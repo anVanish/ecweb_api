@@ -1,6 +1,5 @@
 const ApiResponse = require("../../utils/ApiResponse")
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require("../../utils/ErrorHandling")
 const InputValidator = require("../../utils/InputValidator")
 const Users = require("../../models/Users")
 const ProfileResponse = require('../../utils/responses/ProfileResponse')
@@ -8,7 +7,7 @@ const ProfileResponse = require('../../utils/responses/ProfileResponse')
 
 class ProfileController{
     //GET /api/users/me
-    getProfile(req, res){
+    getProfile(req, res, next){
         const _id = req.user._id
         Users.findOneUsers({_id}, {addPending: true})
         .then((user) => {
@@ -21,15 +20,15 @@ class ProfileController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //PATCH /api/users/me
-    updateProfile(req, res){
+    updateProfile(req, res, next){
         const _id = req.user._id
         const errorCode = InputValidator.invalidUser(req.body)
-        if (errorCode) return ErrorHandling.handleErrorResponse(res, errorCode)
+        if (errorCode) return next(errorCode)
 
         Users.findOneAndUpdateUsers({_id}, new ProfileResponse(req.body), {new: true, addPending: true})
         .then((updatedUser) => {
@@ -41,12 +40,12 @@ class ProfileController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE /api/users/me
-    deleteAccount(req, res){
+    deleteAccount(req, res, next){
         const _id = req.user._id
 
         Users.deleteUsersById(_id, {new: true})
@@ -57,12 +56,12 @@ class ProfileController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
     
     //PATCH /api/users/me/restore
-    restoreAccount(req, res){
+    restoreAccount(req, res, next){
         const _id = req.user._id
 
         Users.findOneAndRestoreUsers({_id}, {new: true, pending: true})
@@ -73,7 +72,7 @@ class ProfileController{
             res.json(apiResponse)
         })
         .catch((error)=>{
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
     

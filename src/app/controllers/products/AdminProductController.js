@@ -1,15 +1,12 @@
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require('../../utils/ErrorHandling')
 const InputValidator = require('../../utils/InputValidator')
 const ApiResponse = require('../../utils/ApiResponse')
 const Products = require('../../models/Product')
 const Shops = require('../../models/Shops')
-const slugify = require('slugify')
-const crypto = require('crypto')
 
 class AdminProductController{
     //POST /api/products/:shopId
-    async addProduct(req, res){
+    async addProduct(req, res, next){
         const _id = req.params.shopId
         try {
             const error = InputValidator.invalidProduct(req.body)
@@ -25,16 +22,16 @@ class AdminProductController{
             apiResponse.setSuccess('Product added')
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //PUT /api/products/:productId
-    updateProduct(req, res){
+    updateProduct(req, res, next){
         const _id = req.params.productId
-        if (!InputValidator.validateId(_id)) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_PARAMS_ID)
+        if (!InputValidator.validateId(_id)) return next(ErrorCodeManager.INVALID_PARAMS_ID)
         const error = InputValidator.invalidProduct(req.body)
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
 
         Products.findOneAndUpdate({_id}, req.body, {new: true})
         .then((product) => {
@@ -45,13 +42,13 @@ class AdminProductController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
 
     }
 
     //DELETE /api/products/:productId
-    deleteProduct(req, res){
+    deleteProduct(req, res, next){
         const _id = req.params.productId
         Products.findOneAndDeleteProducts({_id}, {new: true})
         .then((product) => {
@@ -62,13 +59,13 @@ class AdminProductController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
 
     }
         
     //PATCH /api/products/:productId/restore
-    restoreProduct(req, res){
+    restoreProduct(req, res, next){
         const _id = req.params.productId
         Products.findOneAndRestoreProducts({_id}, {new: true})
         .then((product) => {
@@ -78,12 +75,12 @@ class AdminProductController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE /api/products/:porductId/force
-    forceDeleteProduct(req, res){
+    forceDeleteProduct(req, res, next){
         const _id = req.params.productId
         Products.findOneAndDelete({_id})
         .then((product) => {
@@ -93,7 +90,7 @@ class AdminProductController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 }

@@ -1,13 +1,12 @@
 const ApiResponse = require("../../utils/ApiResponse")
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require("../../utils/ErrorHandling")
 const InputValidator = require("../../utils/InputValidator")
 const Users = require("../../models/Users")
 
 class UserController{ 
 
     //GET /api/users
-    async listUsers(req, res){
+    async listUsers(req, res, next){
         //params all=false, deleted=true, page=1, limit=5
         let page = 1
         let limit = 10
@@ -42,12 +41,12 @@ class UserController{
 
             res.json(apiResponse)
         } catch(error){
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //GET /api/users/:userId
-    detailUser(req, res){
+    detailUser(req, res, next){
         const userId = req.params.userId
         Users.findOne({_id: userId})
         .then((user) => {
@@ -58,16 +57,16 @@ class UserController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //POST /api/users
-    addUser(req, res){
+    addUser(req, res, next){
         const errorRequired = InputValidator.invalidAuth(req.body)
-        if (errorRequired) return ErrorHandling.handleErrorResponse(res, errorRequired)
+        if (errorRequired) return next(errorRequired)
         const errorInput = InputValidator.invalidUser(req.body)
-        if (errorInput) return ErrorHandling.handleErrorResponse(res, errorInput)
+        if (errorInput) return next(errorInput)
 
         const {email} = req.body
         Users.findOne({email})
@@ -82,34 +81,34 @@ class UserController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //PATCH /api/users/:userId
-    updateUser(req, res){
+    updateUser(req, res, next){
         const _id = req.params.userId
-        if (!_id) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_ID, 'User Id is required')
+        if (!_id) return next(ErrorCodeManager.MISSING_ID, 'User Id is required')
         const errorInput = InputValidator.invalidUser(req.body)
         if (errorInput) return ErrorHandling.handleErrorResponse(errorInput)
 
         Users.findByIdAndUpdate(_id, req.body, {new: true})
         .then((user) => {
-            if (!user) throw ErrorHandling.handleErrorResponse(res, ErrorCodeManager.USER_NOT_FOUND)
+            if (!user) throw next(ErrorCodeManager.USER_NOT_FOUND)
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Update successfully')
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE /api/users/:userId
-    deleteUser(req, res){
+    deleteUser(req, res, next){
         const _id = req.params.userId
-        if (!_id) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_ID, 'User Id is required')
+        if (!_id) return next(ErrorCodeManager.MISSING_ID, 'User Id is required')
         
         Users.deleteUsersById(_id, {new: true})
         .then((user) => {
@@ -120,12 +119,12 @@ class UserController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //PATCH /api/users/:userId/restore
-    restoreUser(req, res){
+    restoreUser(req, res, next){
         const _id = req.params.userId
         Users.findOneAndRestoreUsers({_id}, {deleted: true, new: true})
         .then((user) => {
@@ -136,12 +135,12 @@ class UserController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE /api/users/:userId/force
-    forceDeleteUser(req, res){
+    forceDeleteUser(req, res, next){
         const _id = req.params.userId
         Users.findByIdAndDelete(_id)
         .then((user) => {
@@ -150,7 +149,7 @@ class UserController{
             apiResponse.setSuccess('User force deleted') 
             res.json(apiResponse)
         })
-        .catch((error) => ErrorHandling.handleErrorResponse(res, error))
+        .catch((error) => next(error))
     }
 }
 

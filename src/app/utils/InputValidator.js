@@ -132,4 +132,10 @@ InputValidator.invalidProduct = (product) => {
     return result.error.details
 }
 
+InputValidator.invalidCartItem = (cart) => {
+    if (!InputValidator.validateId(cart.productId) || !InputValidator.validateId(cart.variationId)) return ErrorCodeManager.INVALID_CART_BODY
+
+    return null
+}
+
 module.exports = InputValidator

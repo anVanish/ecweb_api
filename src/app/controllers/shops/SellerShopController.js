@@ -1,6 +1,5 @@
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
 const InputValidator = require("../../utils/InputValidator")
-const ErrorHandling = require('../../utils/ErrorHandling')
 const Users = require('../../models/Users')
 const Shops = require('../../models/Shops')
 const Products = require('../../models/Product')
@@ -10,7 +9,7 @@ const ProfileResponse = require('../../utils/responses/ProfileResponse')
 class SellerShopController{
     //seller authentication
     //GET /api/shops/me/products
-    getMyShop(req, res){
+    getMyShop(req, res, next){
         const _id = req.user._id
         Shops.findOne({sellerId: _id})
         .then((shop) => {
@@ -22,12 +21,12 @@ class SellerShopController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //GET /api/shops/me/products
-    async myShopProduct(req, res){
+    async myShopProduct(req, res, next){
         const _id = req.user._id
         let limit = 10, page = 1
         const deleted = (req.query.deleted === 'true')
@@ -49,12 +48,12 @@ class SellerShopController{
             apiResponse.data.products = products
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //POST /api/shops/me
-    async registerSeller(req, res){
+    async registerSeller(req, res, next){
         const _id = req.user._id
         req.body.sellerId = _id
         const apiResponse = new ApiResponse()
@@ -78,15 +77,15 @@ class SellerShopController{
             apiResponse.data.user = new ProfileResponse(user)
             res.json(apiResponse)
         } catch (error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }        
     }
 
     //PATCH /api/shops/me
-    updateMyShop(req, res){
+    updateMyShop(req, res, next){
         const {_id} = req.user
         const error = InputValidator.invalidShop(req.body, {create: false})
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
 
         Shops.findOneAndUpdate({sellerId: _id}, req.body, {new: true})
         .then((shop) => {
@@ -96,12 +95,12 @@ class SellerShopController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE /api/shops/me
-    deleteMyShop(req, res){
+    deleteMyShop(req, res, next){
         const {_id} = req.user
         Shops.findOneAndDelete({sellerId: _id})
         .then((shop) => {
@@ -111,7 +110,7 @@ class SellerShopController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 }

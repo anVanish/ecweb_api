@@ -13,3 +13,7 @@ tags:
     description: API operation about categories (for admin)
   - name: Products
     description: API operation about products
+  - name: Carts
+    description: API operation about carts of user
+  - name: Orders
+    description: API operation about orders

@@ -1,13 +1,12 @@
 const ApiResponse = require("../../utils/ApiResponse")
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require("../../utils/ErrorHandling")
 const InputValidator = require("../../utils/InputValidator")
 const Users = require("../../models/Users")
 
 class AddressController{
     //my address
     //GET /api/users/me/addresses
-    getMyAddresses(req, res){
+    getMyAddresses(req, res, next){
         const _id = req.user._id
         Users.findOneUsers({_id})
         .then((user)=>{
@@ -18,12 +17,12 @@ class AddressController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
     
     //GET /api/addresses/:addressId/me
-    getMyAddress(req, res){
+    getMyAddress(req, res, next){
         const _id = req.user._id
         const { addressId } = req.params
         Users.findOneUsers({_id})
@@ -38,16 +37,16 @@ class AddressController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
     
     //POST /api/users/me/addresses
-    addMyAddress(req, res){
+    addMyAddress(req, res, next){
         const _id = req.user._id
 
         const error = InputValidator.invalidAddr(req.body) 
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
 
         Users.findOneUsers({_id})
         .then((user) => {
@@ -62,16 +61,16 @@ class AddressController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //PUT addresses/:addressId/me
-    updateMyAddress(req, res){
+    updateMyAddress(req, res, next){
         const _id = req.user._id
         const { addressId } = req.params
         const error = InputValidator.invalidAddr(req.body)
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
 
         Users.findOneUsers({_id})
         .then((user) => {
@@ -81,8 +80,6 @@ class AddressController{
             
             Object.assign(addr, req.body)
             return user.save()
-
-            
         })
         .then(() => {
             const apiResponse = new ApiResponse()
@@ -90,12 +87,12 @@ class AddressController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //DELETE addresses/:addressId/me
-    deleteMyAddress(req, res){
+    deleteMyAddress(req, res, next){
         const _id = req.user._id
         const { addressId } = req.params
 
@@ -114,7 +111,7 @@ class AddressController{
             res.json(apiResponse);
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 }

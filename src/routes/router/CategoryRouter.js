@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const categoryController = require('../../app/controllers/categories/CategoryController')
-const {authenticateToken, authenticateAdmin} = require('../../middlewares/AuthenticateToken')
+const {authenticateToken, authenticateAdmin} = require('../../middlewares/authentication')
 
 //no auth
 router.get('/', categoryController.listCategories)

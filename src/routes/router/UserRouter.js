@@ -4,7 +4,7 @@ const userController = require('../../app/controllers/users/UserController')
 const profileController = require('../../app/controllers/users/ProfileController')
 const addressController = require('../../app/controllers/addresses/AddressController')
 const adminAddressController = require('../../app/controllers/addresses/AdminAddressController')
-const {authenticateUser, authenticateAdmin, authenticateToken} = require('../../middlewares/AuthenticateToken')
+const {authenticateUser, authenticateAdmin, authenticateToken} = require('../../middlewares/authentication')
 
 //uri /api/users
 router.use(authenticateToken)

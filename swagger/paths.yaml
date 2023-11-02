@@ -1723,6 +1723,28 @@ paths:
             type: boolean
             enum:
               - true
+        - name: sortBy
+          in: query
+          description: Sort result by popularity, time, sales, price, use for sorting
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum: 
+              - pops
+              - time
+              - sales
+              - price
+        - name: order
+          in: query
+          description: Sort product ascending or descending, use for sorting
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
         - name: search
           in: query
           description: Allows the client to specify a search string for filtering products based on name
@@ -1730,6 +1752,21 @@ paths:
           explode: true
           schema:
             type: string
+        - name: category
+          in: query
+          description: The category slug, use for filtering
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: subCategories
+          in: query
+          description: The list of subcategories slug, use for filtering
+          required: true
+          explode: true
+          schema:
+            type: string
+
       responses:
         '200':
           description: success
@@ -1895,7 +1932,7 @@ paths:
           explode: true
           description: Slug of product
           in: path
-          example: iphone-13-promax-653d6e41e0d271bb861bbab5
+          example: iphone-13-promax-653e8afe3f5ccd100db50be7
           schema:
             type: string
             format: ObjectID
@@ -1944,12 +1981,12 @@ paths:
           explode: true
           description: Id of product
           in: path
-          example: 653d6e41e0d271bb861bbab5
+          example: 653e8afe3f5ccd100db50be7
           schema:
             type: string
             format: ObjectID
       requestBody:
-        description: Field name, images, category, categoryId, subCategoryId, variations, weight, packageSize is required
+        description: Field shopId, name, images, category, categoryId, subCategoryId, variations, weight, packageSize is required
         content:
           application/json:
             schema:
@@ -1989,7 +2026,7 @@ paths:
           explode: true
           description: Id of product
           in: path
-          example: 653d6e41e0d271bb861bbab5
+          example: 653e8b893f5ccd100db50c02
           schema:
             type: string
             format: ObjectID
@@ -2027,7 +2064,7 @@ paths:
           explode: true
           description: Id of product
           in: path
-          example: 653d6e41e0d271bb861bbab5
+          example: 653e8b893f5ccd100db50c02
           schema:
             type: string
             format: ObjectID
@@ -2213,7 +2250,7 @@ paths:
           explode: true
           description: Id of product
           in: path
-          example: 653d6e41e0d271bb861bbab5
+          example: 653e8b893f5ccd100db50c02
           schema:
             type: string
             format: ObjectID
@@ -2258,7 +2295,7 @@ paths:
           explode: true
           description: Id of product
           in: path
-          example: 653d6e41e0d271bb861bbab5
+          example: 653e8b893f5ccd100db50c02
           schema:
             type: string
             format: ObjectID
@@ -2296,7 +2333,7 @@ paths:
           explode: true
           description: Id of product
           in: path
-          example: 653d6e41e0d271bb861bbab5
+          example: 653e8b893f5ccd100db50c02
           schema:
             type: string
             format: ObjectID

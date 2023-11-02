@@ -3,18 +3,17 @@ const ErrorCodeManager = require('../../utils/ErrorCodeManager')
 const InputValidator = require('../../utils/InputValidator')
 const Users = require('../../models/Users')
 const MailService = require('../../services/MailService')
-const ErrorHandling = require('../../utils/ErrorHandling')
 const tokenService = require('../../services/TokenService')
 const ProfileResponse = require('../../utils/responses/ProfileResponse')
 
 class AuthController{
     //POST /api/auth/register
-    register(req, res){
+    register(req, res, next){
         const apiResponse = new ApiResponse()
         const {email, password, confirmPassword } = req.body
 
         const error = InputValidator.invalidAuth({email, password, confirmPassword})
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
         
         Users.findOneUsers({ email }, {addPending: true})
             .then((foundUser) => {
@@ -38,17 +37,17 @@ class AuthController{
                 res.json(apiResponse);
             })
             .catch((error) => {
-                ErrorHandling.handleErrorResponse(res, error)
+                next(error)
             })
     }
 
     //POST /api/auth/login
-    login(req, res){
+    login(req, res, next){
         const apiResponse = new ApiResponse()
         const {email, password} = req.body
         
         const error = InputValidator.invalidAuth({email, password})
-        if (error) return ErrorHandling.handleErrorResponse(res, error)
+        if (error) return next(error)
         
         Users.findOneUsers({email}, {addPending: true})
             .then((user) => {
@@ -70,17 +69,17 @@ class AuthController{
                 res.json(apiResponse)
             })
             .catch((error) => {
-                ErrorHandling.handleErrorResponse(res, error)
+                next(error)
             })
     }
 
     //POST /api/auth/forgot-password
-    forgotPassword(req, res){
+    forgotPassword(req, res, next){
         const apiResponse = new ApiResponse()
         const email = req.body.email
 
-        if (!email) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_EMAIL)
-        if (!InputValidator.validateEmail(email)) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_EMAIL)
+        if (!email) return next(ErrorCodeManager.MISSING_EMAIL)
+        if (!InputValidator.validateEmail(email)) return next(ErrorCodeManager.INVALID_EMAIL)
 
         Users.findOneUsers({email}, {addPending: true})
             .then((user) => {
@@ -99,21 +98,21 @@ class AuthController{
                 res.json(apiResponse)
             })
             .catch((error) => {
-                ErrorHandling.handleErrorResponse(res, error)
+                next(error)
             })
     }
 
     //PATCH /api/auth/forgot-password
-    resetPassword(req, res){
+    resetPassword(req, res, next){
         const apiResponse = new ApiResponse()
         const {password, confirmPassword, resetCode} = req.body
 
-        if (!password) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_PASSWORD)
-        if (password !== confirmPassword) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.PASSWORD_CONFIRM_INCORRECT)
-        if (!resetCode) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.MISSING_RESET_CODE)
+        if (!password) return next(ErrorCodeManager.MISSING_PASSWORD)
+        if (password !== confirmPassword) return next(ErrorCodeManager.PASSWORD_CONFIRM_INCORRECT)
+        if (!resetCode) return next(ErrorCodeManager.MISSING_RESET_CODE)
 
         const decodedData = tokenService.decodeAccessToken(resetCode)
-        if (!decodedData) return ErrorHandling.handleErrorResponse(res, ErrorCodeManager.INVALID_RESET_CODE)
+        if (!decodedData) return next(ErrorCodeManager.INVALID_RESET_CODE)
 
         Users.findOneAndUpdate({_id: decodedData.user._id}, {$set: {password}}, {new: true})
             .then((user) => {
@@ -122,12 +121,12 @@ class AuthController{
                 res.json(apiResponse)
             })
             .catch((error) => {
-                ErrorHandling.handleErrorResponse(res, error)
+                next(error)
             })
     }
 
     //POST /api/auth/verify/email
-    async verifyEmail(req, res){
+    async verifyEmail(req, res, next){
         const apiResponse = new ApiResponse()
         const code = req.body.code
 
@@ -148,12 +147,12 @@ class AuthController{
             apiResponse.setSuccess('Email verified')
             res.json(apiResponse)
         } catch (error){
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //POST /api/auth/register/email
-    async registerSendMail(req, res){
+    async registerSendMail(req, res, next){
         //descirption: resend verify for user
         const {email} = req.body
         const apiResponse = new ApiResponse()
@@ -179,7 +178,7 @@ class AuthController{
             apiResponse.setSuccess('Mail sent')
             res.json(apiResponse)
         } catch (error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 }

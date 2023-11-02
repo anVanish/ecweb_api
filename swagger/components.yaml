@@ -294,17 +294,14 @@ components:
         category:
           type: object
           properties:
-            categoryId:
+            categorySlug:
               type: string
               format: objectId
-              example: "653b587cb5533ab59df6508a"
-            subCategoryId:
+              example: "djien-thoai-va-phu-kien-653b587cb5533ab59df6508a"
+            subCategorySlug:
               type: string
               format: objectId
-              example: "653b587cb5533ab59df6508b"
-        slug:
-          type: string
-          example: "iphone-13-promax-653d6e41e0d271bb861bbab5"
+              example: "djien-thoai-191f1f74"
         description:
           type: string
           example: "This is a product description."
@@ -322,12 +319,6 @@ components:
             - name: "Dung lượng 128GB"
               price: 24000000
               stock: 12
-        status:
-          type: string
-          enum:
-            - new
-            - used
-          example: "new"
         weight:
           type: number
           example: 10
@@ -368,14 +359,14 @@ components:
         category:
           type: object
           properties:
-            categoryId:
+            categorySlug:
               type: string
               format: objectId
-              example: "653b587cb5533ab59df6508a"
-            subCategoryId:
+              example: "djien-thoai-va-phu-kien-653b587cb5533ab59df6508a"
+            subCategorySlug:
               type: string
               format: objectId
-              example: "653b587cb5533ab59df6508b"
+              example: "djien-thoai-191f1f74"
         description:
           type: string
           example: "This is a product description."
@@ -423,14 +414,14 @@ components:
         category:
           type: object
           properties:
-            categoryId:
+            categorySlug:
               type: string
               format: objectId
-              example: "653b587cb5533ab59df6508a"
-            subCategoryId:
+              example: "djien-thoai-va-phu-kien-653b587cb5533ab59df6508a"
+            subCategorySlug:
               type: string
               format: objectId
-              example: "653b587cb5533ab59df6508b"
+              example: "djien-thoai-191f1f74"
         description:
           type: string
           example: "This is a product description."

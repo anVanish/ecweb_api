@@ -1,5 +1,4 @@
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require('../../utils/ErrorHandling')
 const Shops = require('../../models/Shops')
 const Products = require('../../models/Product')
 const ApiResponse = require("../../utils/ApiResponse")
@@ -9,7 +8,7 @@ const {filterProducts} = require('../../utils/SearchFilters')
 class ShopController{
     //no authentication
     //GET /api/shops/:shopId
-    detailShop(req, res){
+    detailShop(req, res, next){
         const _id = req.params.shopId
         Shops.findOne({_id})
         .then((shop) => {
@@ -20,12 +19,12 @@ class ShopController{
             res.json(shop)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 
     //GET /api/shops/:shopId/products
-    async shopProduct(req, res){
+    async shopProduct(req, res, next){
         const shopId = req.params.shopId
         const {pagination, filters, sort, options} = filterProducts(req.query, {shopId})
         
@@ -43,7 +42,7 @@ class ShopController{
 
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 }

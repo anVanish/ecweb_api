@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {authenticateToken, authenticateSeller, authenticateAdmin, authenticateUser} = require('../../middlewares/AuthenticateToken')
+const {authenticateToken, authenticateSeller, authenticateAdmin, authenticateUser} = require('../../middlewares/authentication')
 const adminProductController = require('../../app/controllers/products/AdminProductController')
 const sellerProductController = require('../../app/controllers/products/SellerProductController')
 const productController = require('../../app/controllers/products/ProductController')

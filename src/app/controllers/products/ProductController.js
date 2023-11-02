@@ -1,12 +1,11 @@
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require('../../utils/ErrorHandling')
 const ApiResponse = require('../../utils/ApiResponse')
 const Products = require('../../models/Product')
 const {filterProducts} = require('../../utils/SearchFilters')
 
 class ProductController{
     //GET /api/products
-    async listProducts(req, res){
+    async listProducts(req, res, next){
 
         const {filters, pagination, sort, options} = filterProducts(req.query)
         
@@ -23,12 +22,12 @@ class ProductController{
             apiResponse.data.products = products
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //GET /api/products/:slug
-    detailProduct(req, res){
+    detailProduct(req, res, next){
         const all = (req.query.all === 'true')
         const slug = req.params.slug
         Products.findOneProducts({slug}, {all})
@@ -42,7 +41,7 @@ class ProductController{
             res.json(apiResponse)
         })
         .catch((error) => {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         })
     }
 }

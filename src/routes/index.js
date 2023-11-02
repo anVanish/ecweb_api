@@ -4,6 +4,7 @@ const shopRouter = require('./router/ShopRouter')
 const addressRouter = require('./router/AddressRouter')
 const categoryRouter = require('./router/CategoryRouter')
 const productRouter = require('./router/ProductRouter')
+const cartRouter = require('./router/CartRouter')
 const swaggerUi = require('swagger-ui-express')
 const openapiSpecification = require('../app/utils/SwaggerOptions')
 
@@ -15,6 +16,7 @@ function route(app){
     app.use('/api/addresses', addressRouter)
     app.use('/api/categories', categoryRouter)
     app.use('/api/products', productRouter)
+    app.use('/api/carts', cartRouter)
     app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 }
 

@@ -1,5 +1,4 @@
 const ErrorCodeManager = require("../../utils/ErrorCodeManager")
-const ErrorHandling = require('../../utils/ErrorHandling')
 const InputValidator = require('../../utils/InputValidator')
 const ApiResponse = require('../../utils/ApiResponse')
 const Products = require('../../models/Product')
@@ -7,7 +6,7 @@ const Shops = require('../../models/Shops')
 
 class SellerProductController{
     //POST /api/products/me
-    async addMyProduct(req, res){
+    async addMyProduct(req, res, next){
         const _id = req.user._id
         try {
             const shop = await Shops.findOne({sellerId: _id})
@@ -24,12 +23,12 @@ class SellerProductController{
             apiResponse.setSuccess('Product added')
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //PUT /api/products/:productId/me
-    async updateMyProduct(req, res){
+    async updateMyProduct(req, res, next){
         const _id = req.user._id
         const productId = req.params.productId
         try{
@@ -48,12 +47,12 @@ class SellerProductController{
             apiResponse.setSuccess('Product updated')
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //DELETE /api/products/:productId/me
-    async deleteMyProduct(req, res){
+    async deleteMyProduct(req, res, next){
         const _id = req.user._id
         const productId = req.params.productId
         try{
@@ -68,12 +67,12 @@ class SellerProductController{
             apiResponse.setSuccess('Product deleted')
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //PATCH /api/products/:productId/me/restore
-    async restoreMyProducts(req, res){
+    async restoreMyProducts(req, res, next){
         const sellerId = req.user._id
         const _id = req.params.productId
         try{
@@ -87,12 +86,12 @@ class SellerProductController{
             apiResponse.setSuccess('Product restored')
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 
     //DELETE /api/products/:porductId/me/force
-    async forceDeleteMyProducts(req, res){
+    async forceDeleteMyProducts(req, res, next){
         const sellerId = req.user._id
         const _id = req.params.productId
 
@@ -105,7 +104,7 @@ class SellerProductController{
             apiResponse.setSuccess('Product deleted')
             res.json(apiResponse)
         } catch(error) {
-            ErrorHandling.handleErrorResponse(res, error)
+            next(error)
         }
     }
 }
