@@ -6,8 +6,8 @@ const cartController = require('../../app/controllers/carts/CartController')
 router.use(authenticateToken, authenticateUser)
 router.get('/', cartController.listCarts)
 router.post('/', cartController.addToCarts)
-router.patch('/:cartItemId/variation', cartController.updateCartVariation)
-router.patch('/:cartItemId/quantity', cartController.updateCartQuantity)
-router.delete('/:cartItemId', cartController.deleteFromCarts)
+router.patch('/:cartId/variation', cartController.updateCartVariation)
+router.patch('/:cartId/quantity', cartController.updateCartQuantity)
+router.delete('/:cartId', cartController.deleteFromCarts)
 
 module.exports = router

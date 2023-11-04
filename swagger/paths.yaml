@@ -2396,7 +2396,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'   
   
-
+  #cart
+  /carts:
+    get:
+      tags:
+        - Carts
+      summary: Get carts (user)
+      description: Allow user to get list of cart items in their carts
+      operationId: getCarts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  
    
 
 

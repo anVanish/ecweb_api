@@ -33,7 +33,8 @@ class ErrorCodeManager{
     static get INVALID_PRODUCT_VARIATION_STOCK() {return new CustomError('INVALID_PRODUCT_VARIATION_STOCK', 400, "Product stock is invalid, must be number and higher than or equal 0")}
     static get INVALID_PARAMS_ID() {return new CustomError('INVALID_PARAMS_ID', 400, "Params id is invalid, format Mongodb ObjectId is required")}
     static get INVALID_SHOP_ID() {return new CustomError('INVALID_SHOP_ID', 400, "ShopId is invalid, id is required and format Mongodb ObjectId is required")}
-    static get INVALID_CART_BODY() {return new CustomError('INVALID_CART_BODY', 400, "ProductId or VariationId is invalid, id is required and format Mongodb ObjectId is required")}
+    static get INVALID_CART_PRODUCT_ID() {return new CustomError('INVALID_CART_BODY', 400, "ProductId is invalid, id is required and format Mongodb ObjectId is required")}
+    static get INVALID_CART_VARIATION_ID() {return new CustomError('INVALID_CART_BODY', 400, "VariationId is invalid, id is required and format Mongodb ObjectId is required")}
     static get MISSING_VARIATION_ID() {return new CustomError('MISSING_VARIATION_ID', 400, "Variation Id is required")}
     static get INVALID_UPDATED_CART_QUANTITY() {return new CustomError('INVALID_UPDATED_CART_QUANTITY', 400, "Quantity to update cart is invalid, required and must be number")}
     

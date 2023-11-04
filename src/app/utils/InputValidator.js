@@ -133,8 +133,8 @@ InputValidator.invalidProduct = (product) => {
 }
 
 InputValidator.invalidCartItem = (cart) => {
-    if (!InputValidator.validateId(cart.productId) || !InputValidator.validateId(cart.variationId)) return ErrorCodeManager.INVALID_CART_BODY
-
+    if (!InputValidator.validateId(cart.productId)) return ErrorCodeManager.INVALID_CART_PRODUCT_ID
+    if (!InputValidator.validateId(cart.variationId)) return ErrorCodeManager.INVALID_CART_VARIATION_ID
     return null
 }
 

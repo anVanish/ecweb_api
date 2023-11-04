@@ -8,22 +8,15 @@ const Carts = require('../../models/Carts')
 class CartController{
     //GET /api/carts
     async listCarts(req, res, next){
-        const _id = req.user._id
+        const userId = req.user._id
+        
         try{
-            let cart = await Carts.findOne({userId: _id})
-            if (!cart){
-                cart = new Carts({userId: _id})
-                await cart.save()
-            }
-            else{
-                await cart.populate({
-                    path: 'items.productId',
-                    select: '_id slug images name'
-                })
-            }
+            const carts = await Carts.findCarts({userId})
+            
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('')
-            apiResponse.data.cart = cart
+            apiResponse.data.total = await Carts.countDocuments({userId})
+            apiResponse.data.carts = carts
             res.json(apiResponse)
         } catch(error) {
             next(error)
@@ -43,99 +36,101 @@ class CartController{
             const variationProduct = product.variations.id(req.body.variationId)
             if (!variationProduct) throw ErrorCodeManager.VARIATION_NOT_FOUND
             
-            //get cart info
-            const cart = await Carts.findOne({userId})
-            //create cart if not found
-            if (!cart) cart = new Carts({userId})
-
-            const cartItem = cart.items.find((item) => item.productId.toString() === req.body.productId)
-
-            if (cartItem) {
-                cartItem.quantity += 1
-                cartItem.totalPrice = variationProduct.price * cartItem.quantity
+            let cart = await Carts.findOne({productId: req.body.productId, variationId: req.body.variationId})
+            if (cart) {
+                cart.quantity += 1
+                cart.totalPrice = variationProduct.price * cart.quantity
             }
             else{
+                req.body.userId = userId
                 req.body.totalPrice = variationProduct.price
-                req.body.variation = variationProduct
-                cart.items.push(req.body)
+                cart = new Carts(req.body)
             }
             await cart.save()
 
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('Cart added')
-            apiResponse.data.cart = cart
+            apiResponse.setSuccess('Product added to cart')
             res.json(apiResponse)
         } catch(error) {
             next(error)
         }
     }
 
-    //PATCH /api/carts/:cartItemId/variation
+    //PATCH /api/carts/:cartId/variation
     async updateCartVariation(req, res, next){
+        const _id = req.params.cartId
         const userId = req.user._id
-        const cartItemId = req.params.cartItemId
         const variationId = req.body.variationId
 
         try{
-            if (!InputValidator.validateId(cartItemId)) throw ErrorCodeManager.INVALID_PARAMS_ID
-            if (!variationId) throw ErrorCodeManager.MISSING_VARIATION_ID
-            const cart = await Carts.findOne({userId})
+            if (!InputValidator.validateId(_id)) throw ErrorCodeManager.INVALID_PARAMS_ID
+            if (!InputValidator.validateId(variationId)) throw ErrorCodeManager.INVALID_CART_VARIATION_ID
+            
+            //get cart to update
+            const cart = await Carts.findOne({_id, userId})
             if (!cart) throw ErrorCodeManager.CART_NOT_FOUND
 
-            const cartItem = cart.items.id(cartItemId)
-            if (!cartItem) throw ErrorCodeManager.CART_ITEM_NOT_FOUND
-
-            const product = await Products.findOne({_id: cartItem.productId})
+            const product = await Products.findOne({_id: cart.productId})
             if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
 
-            const variation = product.variations.id(variationId)
-            if (!variation) throw ErrorCodeManager.VARIATION_NOT_FOUND
+            const variationProduct = product.variations.id(variationId)
+            if (!variationProduct) throw ErrorCodeManager.VARIATION_NOT_FOUND
 
-            cartItem.variation = variation
-            await cart.save()
+            //count all cart have that variation
+            const existCart = await Carts.findOne({productId: cart.productId, variationId: req.body.variationId, _id: {$ne: _id}})
 
+            //not found same variation, update
+            if (!existCart){
+                if (cart.variationId != req.body.variationId){
+                    cart.variationId = req.body.variationId
+                    await cart.save()
+                }
+            }
+            //found, delete current and update quantiy to existing cart
+            else{
+                existCart.quantity += 1
+                existCart.totalPrice = existCart.quantity * variationProduct.price
+                await existCart.save()
+                await cart.deleteOne()
+            }
+            
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Cart variation updated')
+            apiResponse.data.variation = variationProduct
             res.json(apiResponse)
         } catch(error) {
             next(error)
         }
     }
 
-    //PATCH /api/carts/:cartItemId/quantity
+    //PATCH /api/carts/:cartId/quantity
     async updateCartQuantity(req, res, next){
         const userId = req.user._id
-        const cartItemId = req.params.cartItemId
+        const cartId = req.params.cartId
         const quantityBody = req.body.quantity
 
         try{
-            if (!InputValidator.validateId(cartItemId)) throw ErrorCodeManager.INVALID_PARAMS_ID
+            if (!InputValidator.validateId(cartId)) throw ErrorCodeManager.INVALID_PARAMS_ID
             if (typeof quantityBody !== 'number') throw ErrorCodeManager.INVALID_UPDATED_CART_QUANTITY
             
-            const cart = await Carts.findOne({userId})
+            const cart = await Carts.findOne({_id: cartId, userId})
             if (!cart) throw ErrorCodeManager.CART_NOT_FOUND
-
-            const cartItem = cart.items.id(cartItemId)
-            if (!cartItem) throw ErrorCodeManager.CART_ITEM_NOT_FOUND
 
             const quantity = parseInt(quantityBody)
             
             if (quantity <= 0){
-                //delete from cart
-                cart.items = cart.items.filter((item) => item._id != cartItem._id)
+                await cart.deleteOne()
             } else {
-                const product = await Products.findOne({_id: cartItem.productId})
+                const product = await Products.findOne({_id: cart.productId})
                 if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
 
-                const variation = product.variations.id(cartItem.variation._id)
+                const variation = product.variations.id(cart.variationId)
                 if (!variation) throw ErrorCodeManager.VARIATION_NOT_FOUND 
 
-                cartItem.quantity = quantity
-                cartItem.totalPrice = quantity * variation.price
+                cart.quantity = quantity
+                cart.totalPrice = quantity * variation.price
+                await cart.save()
             }
-
-            await cart.save()
-
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Cart quantity updated')
             apiResponse.data.cart = cart
@@ -145,27 +140,20 @@ class CartController{
         }
     }
     
-    //DELETE /api/carts/:cartItemId
+    //DELETE /api/carts/:cartId
     async deleteFromCarts(req, res, next){
-        const cartItemId = req.params.cartItemId
+        const cartId = req.params.cartId
         const userId = req.user._id
         try{
-            if (!InputValidator.validateId(cartItemId)) ErrorCodeManager.INVALID_PARAMS_ID
+            if (!InputValidator.validateId(cartId)) ErrorCodeManager.INVALID_PARAMS_ID
 
-            const cart = await Carts.findOne({userId})
+            const cart = await Carts.findOne({_id: cartId, userId})
             if (!cart) throw ErrorCodeManager.CART_NOT_FOUND
             
-            const cartItem = cart.items.id(cartItemId)
-            if (!cartItem) throw ErrorCodeManager.CART_ITEM_NOT_FOUND
-
-            cart.items = cart.items.filter((item) => item._id !== cartItem._id)
+            await cart.deleteOne()
             
-            await cart.save()
-
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('cart deleted')
-            apiResponse.data.cart = cart
-
+            apiResponse.setSuccess('Cart deleted')
             res.json(apiResponse)
         } catch (error) {
             next(error)
