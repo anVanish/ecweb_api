@@ -1762,7 +1762,7 @@ paths:
         - name: subCategories
           in: query
           description: The list of subcategories slug, use for filtering
-          required: true
+          required: false
           explode: true
           schema:
             type: string
