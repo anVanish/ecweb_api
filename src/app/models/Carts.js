@@ -67,7 +67,6 @@ Carts.statics.findCarts = function(filters = {}){
         { //group by product.shopId, use nessecary field
             $group: {
                 _id: '$product.shopId',
-                shopId: {$first: '$shop._id'},
                 shopName: { $first: '$shop.name' },
                 userId: { $first: '$userId' },
                 products: {
@@ -88,7 +87,6 @@ Carts.statics.findCarts = function(filters = {}){
         { //get result
             $project: {
                 userId: 1,
-                shopId: 1,
                 shopName: 1,
                 products: 1,
             },

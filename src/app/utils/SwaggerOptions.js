@@ -15,6 +15,9 @@ const options = {
       },
       servers: [
         {
+          url: 'https://ecwebsite.onrender.com/api'
+        },
+        {
           url: 'https://tiny-jade-elk-wear.cyclic.cloud/api'
         },
         {

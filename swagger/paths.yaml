@@ -2402,7 +2402,7 @@ paths:
       tags:
         - Carts
       summary: Get carts (user)
-      description: Allow user to get list of cart items in their carts
+      description: Allow user to get list of cart items in their carts, group by product's shop
       operationId: getCarts
       security:
         - BearerAuth: []
@@ -2419,19 +2419,210 @@ paths:
                   data:
                     type: object
                     properties:
+                      total:
+                        type: number
+                        example: 1
                       products:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Products'  
-        '404':
-          description: Not found, SHOP_NOT_FOUND
+                          $ref: '#/components/schemas/ResultCarts'  
         '500':
           description: Internal server error, SERVER_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'   
-  
+    post:
+      tags:
+        - Carts
+      summary: Add to carts (user)
+      description: Allow user to product to their carts
+      operationId: addCarts
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: productId is _id of product need to add, variationId is product.variations._id (variation for that product)
+        content:
+          application/json:
+            schema:
+              properties:
+                productId:
+                  type: string
+                  format: ObjectID
+                  example: '653e8a9e14512ee30a5c0137'
+                variationId:
+                  type: string
+                  format: ObjectID
+                  example: '653e8a9e14512ee30a5c0139'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400': 
+          description: Bad request, INVALID_CART_PRODUCT_ID | INVALID_CART_VARIATION_ID
+        '404':
+          description: Not found, VARIATION_NOT_FOUND | PRODUCT_NOT_FOUND  
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /carts/{cartId}/variation:
+    patch:
+      tags:
+        - Carts
+      summary: Update product's variation in carts (user)
+      description: Allow user update variation of product in their carts
+      operationId: updateVariationCarts
+      parameters:
+        - name: cartId
+          type: string
+          required: true
+          explode: true
+          description: Id of cart
+          in: path
+          example: '654688a5b231010272ee9b80'
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: variationId of the product
+        content:
+          application/json:
+            schema:
+              properties:
+                variationId:
+                  type: string
+                  format: ObjectID
+                  example: '653e8a9e14512ee30a5c0139'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      variation:
+                        $ref: '#/components/schemas/Variation'
+        '400': 
+          description: Bad request, INVALID_PARAMS_ID | INVALID_CART_VARIATION_ID
+        '404':
+          description: Not found, CART_NOT_FOUND | VARIATION_NOT_FOUND | PRODUCT_NOT_FOUND  
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /carts/{cartId}/quantity:
+    patch:
+      tags:
+        - Carts
+      summary: Update product's quantity in carts (user)
+      description: Allow user update quantity of product in their carts
+      operationId: updateQuantityCarts
+      parameters:
+        - name: cartId
+          type: string
+          required: true
+          explode: true
+          description: Id of cart
+          in: path
+          example: '654688a5b231010272ee9b80'
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: quantity of the product, if quantity is 0, item will be deleted
+        content:
+          application/json:
+            schema:
+              properties:
+                quantity:
+                  type: number
+                  example: 2
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400': 
+          description: Bad request, INVALID_PARAMS_ID | INVALID_UPDATED_CART_QUANTITY 
+        '404':
+          description: Not found, CART_NOT_FOUND | VARIATION_NOT_FOUND | PRODUCT_NOT_FOUND  
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+  /carts/{cartId}:
+    delete:
+      tags:
+        - Carts
+      summary: delete product in carts (user)
+      description: Allow user to delete product in their carts
+      operationId: deleteCarts
+      parameters:
+        - name: cartId
+          type: string
+          required: true
+          explode: true
+          description: Id of cart
+          in: path
+          example: '654687d2b7a00bc1ba5f834e'
+          schema:
+            type: string
+            format: ObjectID
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400': 
+          description: Bad request, INVALID_PARAMS_ID 
+        '404':
+          description: Not found, CART_NOT_FOUND 
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'   
+       
+
+
+
+
    
 
 

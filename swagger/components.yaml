@@ -266,6 +266,10 @@ components:
     Variation:
       type: object
       properties:
+        _id:
+          type: string
+          format: ObjectID
+          example: '6540007e0ad7db6e61840791'
         name:
           type: string
           example: "Dung lượng 64GB"
@@ -455,7 +459,63 @@ components:
               type: number
               example: 12
     
-    
+    ResultCarts:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: ObjectID
+          example: '65393c347287bc3e74eead08'
+        shopName:
+          type: string
+          example: khanhan.shop
+        userId: 
+          type: string
+          example: '6530fb27ee98ba62f7728d71'
+        product: 
+          items:
+            type: object
+            properties:
+              cartId:
+                type: string
+                format: ObjectID
+                example: '6546842e56946c3688a4f4d5'
+              product:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    format: ObjectID
+                    example: '653e8a9e14512ee30a5c0137'
+                  name: 
+                    type: string
+                    example: 'Tai nghe F9 pro'
+                  slug:
+                    type: string
+                    example: 'tai-nghe-f9-pro-653e8a9e14512ee30a5c0137'
+              variation:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: 'Màu đen'
+                  price:
+                    type: number
+                    example: 200000
+                  stock:
+                    type: number
+                    example: 12
+                  _id: 
+                    type: string
+                    format: ObjectID
+                    example: '653e8a9e14512ee30a5c0138'
+              quantity:
+                type: number
+                example: 3
+              totalPrice:
+                type: number
+                example: 600000
+
     # data
     LoginData:
       type: object
