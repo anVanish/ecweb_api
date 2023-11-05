@@ -2422,7 +2422,7 @@ paths:
                       total:
                         type: number
                         example: 1
-                      products:
+                      carts:
                         type: array
                         items:
                           $ref: '#/components/schemas/ResultCarts'  
