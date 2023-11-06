@@ -9,6 +9,8 @@ const Carts = new Schema({
     variationId: {type: ObjectId, required: true},
     quantity: {type: Number, required: true, default: 1},
     totalPrice: {type: Number, required: true},
+}, {
+    timestamps: true
 })
 
 Carts.statics.findCarts = function(filters = {}){
@@ -69,6 +71,7 @@ Carts.statics.findCarts = function(filters = {}){
                 _id: '$product.shopId',
                 shopName: { $first: '$shop.name' },
                 userId: { $first: '$userId' },
+                latestProductDate: { $max: '$updatedAt' },
                 products: {
                     $push: {
                         cartId: '$_id',
@@ -80,14 +83,36 @@ Carts.statics.findCarts = function(filters = {}){
                         variation: '$productVariation',
                         quantity: '$quantity',
                         totalPrice: '$totalPrice',
-                    },
+                        updatedAt: '$updatedAt',
+                    }
                 },
             },
         },
+        {
+            $unwind: '$products',
+        },
+        {
+            $sort: { 'products.updatedAt': -1 }, // Sort products by their updatedAt date in descending order
+        },
+        { //group again after sort product
+            $group: {
+                _id: '$_id',
+                shopName: { $first: '$shopName' },
+                userId: { $first: '$userId' },
+                latestProductDate: { $first: '$latestProductDate' },
+                products: {
+                    $push: '$products',
+                },
+            },
+        },
+        { //sort shop by lasted cart items updateAt
+            $sort: {latestProductDate: -1}
+        },
+
         { //get result
             $project: {
                 userId: 1,
-                shopName: 1,
+                shopName: 1, 
                 products: 1,
             },
         },

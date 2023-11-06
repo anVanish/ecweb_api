@@ -2,7 +2,6 @@ const ErrorCodeManager = require("../../utils/ErrorCodeManager")
 const InputValidator = require('../../utils/InputValidator')
 const ApiResponse = require('../../utils/ApiResponse')
 const Products = require('../../models/Product')
-const Shops = require('../../models/Shops')
 const Carts = require('../../models/Carts')
 
 class CartController{
