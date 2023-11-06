@@ -30,26 +30,27 @@ class CartController{
             const error = InputValidator.invalidCartItem(req.body)
             if (error) throw error
 
+            const {productId, variationId} = req.body
+
             //get product info
-            const product = await Products.findOne({_id: req.body.productId})
+            const product = await Products.findOne({_id: productId})
             if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
-            const variationProduct = product.variations.id(req.body.variationId)
+            const variationProduct = product.variations.id(variationId)
             if (!variationProduct) throw ErrorCodeManager.VARIATION_NOT_FOUND
             
-            let cart = await Carts.findOne({productId: req.body.productId, variationId: req.body.variationId})
+            let cart = await Carts.findOne({productId, variationId, userId})
             if (cart) {
                 cart.quantity += 1
                 cart.totalPrice = variationProduct.price * cart.quantity
             }
             else{
-                req.body.userId = userId
-                req.body.totalPrice = variationProduct.price
-                cart = new Carts(req.body)
+                cart = new Carts({productId, variationId, userId, totalPrice: variationProduct.price})
             }
             await cart.save()
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Product added to cart')
+            apiResponse.data.cart = cart 
             res.json(apiResponse)
         } catch(error) {
             next(error)
