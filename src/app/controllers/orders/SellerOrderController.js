@@ -31,7 +31,7 @@ class OrderController{
         }
     }
 
-    //GET /api/orders/:orderId/me
+    //GET /api/orders/:orderId/shop
     async detailShopOrder(req, res, next){
         const sellerId = req.user._id
         const _id = req.params.orderId

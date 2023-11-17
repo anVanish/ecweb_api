@@ -6,7 +6,7 @@ const sellerOrderController = require('../../app/controllers/orders/SellerOrderC
 const adminOrderController = require('../../app/controllers/orders/AdminOrderController')
 
 router.use(authenticateToken)
-router.post('/checkout/code', orderController.getCheckOutCode)
+router.post('/checkout', orderController.getCheckOutCode)
 router.get('/checkout', orderController.checkout)
 
 //user

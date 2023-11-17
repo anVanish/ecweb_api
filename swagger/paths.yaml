@@ -1766,7 +1766,6 @@ paths:
           explode: true
           schema:
             type: string
-
       responses:
         '200':
           description: success
@@ -2619,9 +2618,852 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'   
        
-
-
-
+  #order
+  #user
+  /orders/me:
+    get:
+      tags:
+        - Orders
+      summary: Get my orders (user)
+      description: Allow user to get list of their orders
+      operationId: getMyOrders
+      parameters:
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: order
+          in: query
+          description: Sort product ascending or descending, use for sorting (by date)
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: search
+          in: query
+          description: Allows the user to specify a search string for filtering products based on product name, order number or shop name
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter the orders by status
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - to-pay
+              - to-confirm
+              - to-ship
+              - to-receive
+              - completed
+              - canceled
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: number
+                        example: 1
+                      length:
+                        type: number
+                        example: 1
+                      orders:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Orders'  
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+    post:
+      tags:
+        - Orders
+      summary: Add order (user)
+      description: Allow user to make new order
+      operationId: addMyOrder
+      requestBody:
+        description: Information about the orders (required all), can archive from checkout
+        content:
+          application/json:
+            schema:
+              properties:
+                orders:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/AddOrders'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/checkout:
+    get:
+      tags:
+        - Orders
+      summary: Checkout Orders
+      description: Allow user to checkout before make an orders
+      operationId: checkoutOrders
+      parameters:
+        - name: code
+          type: string
+          required: true
+          explode: true
+          description: checkout code, use post action to get this code
+          in: query
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjpbeyJfaWQiOiI2NTNlOGE5ZTE0NTEyZWUzMGE1YzAxMzciLCJ2YXJpYXRpb25JZCI6IjY1M2U4YTllMTQ1MTJlZTMwYTVjMDEzOCIsInF1YW50aXR5IjoyfSx7Il9pZCI6IjY1NDY4ZTk0MWEyZjllODEzYzkwMDRhYSIsInZhcmlhdGlvbklkIjoiNjU0NjhlOTQxYTJmOWU4MTNjOTAwNGFjIiwicXVhbnRpdHkiOjJ9XSwiaWF0IjoxNjk5NzQwMzY0LCJleHAiOjE3MDAzNDUxNjR9.OP16iaxAasf_FOM8pgKhsCQwQgUlCQvN5jlvi9yeoBY'
+        
+        - name: addressId
+          type: string
+          required: true
+          explode: true
+          description: Id of user's address
+          in: query
+          example: '6538c4e2cc978c2ebaba4efb'
+        
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      orders:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AddOrders'  
+        '400':
+          description: Bad request, INVALID_CODE
+        '404':
+          description: Not found, ADDRESS_NOT_FOUND | USER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+    post:
+      tags:
+        - Orders
+      summary: Get order checkout code
+      description: Allow user get order checkout Code, pass to checkout API
+      operationId: checkoutOrdersCode
+      requestBody:
+        description: Need to provide all product want to order with _id, variation._id and quantity
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CodeOrders'          
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjpbeyJfaWQiOiI2NTNlOGE5ZTE0NTEyZWUzMGE1YzAxMzciLCJ2YXJpYXRpb25JZCI6IjY1M2U4YTllMTQ1MTJlZTMwYTVjMDEzOCIsInF1YW50aXR5IjoyfSx7Il9pZCI6IjY1NDY4ZTk0MWEyZjllODEzYzkwMDRhYSIsInZhcmlhdGlvbklkIjoiNjU0NjhlOTQxYTJmOWU4MTNjOTAwNGFjIiwicXVhbnRpdHkiOjJ9XSwiaWF0IjoxNjk5NzQwMzY0LCJleHAiOjE3MDAzNDUxNjR9.OP16iaxAasf_FOM8pgKhsCQwQgUlCQvN5jlvi9yeoBY
+        '400':
+          description: Bad request, INVALID_CHECKOUT_PRODUCTS
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}/me/address:
+    patch:
+      tags:
+        - Orders
+      summary: Update order's address (user)
+      description: Allow user update address when order is not comfirmed
+      operationId: updateMyOdersAddr
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3985b9d4f8135ac00ff'
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        description: Address id to update
+        content:
+          application/json:
+            schema:
+              properties:
+                addressId: 
+                  type: string
+                  format: objectId
+                  example: 6538c4c1cc978c2ebaba4ef5        
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '403':
+          description: Forbidden, ORDER_CANT_BE_CHANGED
+        '404':
+          description: Not found, USER_NOT_FOUND | ADDRESS_NOT_FOUND | ORDER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}/me:
+    get:
+      tags:
+        - Orders
+      summary: Get my order detail (user)
+      description: Allow user to get order detail
+      operationId: getMyOder
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3985b9d4f8135ac00ff'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        $ref: '#/components/schemas/Orders'
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '404':
+          description: Not found, ORDER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+    delete:
+      tags:
+        - Orders
+      summary: Cancel order (user)
+      description: Allow user to cancel order when it is not comfirmed
+      operationId: cancelMyOders
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3985b9d4f8135ac00ff'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '403':
+          description: Forbidden, ORDER_CANT_BE_CHANGED
+        '404':
+          description: Not found, ORDER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  #seller
+  /orders/shop:
+    get:
+      tags:
+        - Orders
+      summary: Get shop orders (seller)
+      description: Allow seller to get list of their shop's orders
+      operationId: getShopOrders
+      parameters:
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: order
+          in: query
+          description: Sort product ascending or descending, use for sorting (by date)
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: search
+          in: query
+          description: Allows the user to specify a search string for filtering products based on product name, order number or shop name
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter the orders by status
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - to-pay
+              - to-confirm
+              - to-ship
+              - to-receive
+              - completed
+              - canceled
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: number
+                        example: 1
+                      length:
+                        type: number
+                        example: 1
+                      orders:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Orders'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}/shop:
+    get:
+      tags:
+        - Orders
+      summary: Get shop's order detail (seller)
+      description: Allow seller to get order detail of their shop's orders
+      operationId: getShopOder
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        $ref: '#/components/schemas/Orders'
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '404':
+          description: Not found, ORDER_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+    delete:
+      tags:
+        - Orders
+      summary: Cancel shop's order (seller)
+      description: Allow seller to cancel shop's order
+      operationId: cancelShopOder
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '403':
+          description: Forbidden, ORDER_CANT_BE_CHANGED
+        '404':
+          description: Not found, ORDER_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}/confirm:
+    patch:
+      tags:
+        - Orders
+      summary: Confirm shop's order (seller)
+      description: Allow seller to confirm their shop's order
+      operationId: confirmShopOder
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '403':
+          description: Forbidden, ORDER_CANT_BE_CHANGED
+        '404':
+          description: Not found, ORDER_NOT_FOUND | SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  #admin
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get list all orders (admin)
+      description: Allow admin to get list of all orders
+      operationId: getOrders
+      parameters:
+        - name: limit
+          in: query
+          description: The page size for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: sortBy
+          in: query
+          description: Sort order by date updated or total price
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - date
+              - price
+        - name: order
+          in: query
+          description: Sort order ascending or descending, use for sorting
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: search
+          in: query
+          description: Allows the user to specify a search string for filtering products based on product name, order number or shop name
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter the orders by status
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - to-pay
+              - to-confirm
+              - to-ship
+              - to-receive
+              - completed
+              - canceled
+        - name: userId
+          in: query
+          description: Filter the orders by userId
+          required: false
+          explode: true
+          example: 6530fb27ee98ba62f7728d71
+          schema:
+            type: string
+        - name: shopId
+          in: query
+          description: Filter the orders by shopId
+          required: false
+          explode: true
+          example: 653943fedb39b5fd654738d3
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: number
+                        example: 1
+                      length:
+                        type: number
+                        example: 1
+                      orders:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Orders'  
+        '404':
+          description: Not found, SHOP_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}:
+    get:
+      tags:
+        - Orders
+      summary: Get order detail (admin)
+      description: Allow admin to get order detail
+      operationId: getOder
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        $ref: '#/components/schemas/Orders'
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '404':
+          description: Not found, ORDER_NOT_FOUND 
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+    delete:
+      tags:
+        - Orders
+      summary: Cancel order (admin)
+      description: Allow admin to cancel order
+      operationId: cancelOder
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID
+        '404':
+          description: Not found, ORDER_NOT_FOUND
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}/status:
+    patch:
+      tags:
+        - Orders
+      summary: Update order's status (admin)
+      description: Allow admin to update order's status
+      operationId: updateOrderStatus
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        description: Status to update, must be in ['to-pay', 'to-confirm', 'to-ship', 'to-receive', 'completed', 'canceled']
+        content:
+          application/json:
+            schema:
+              properties:
+                status:
+                  type: string
+                  example: to-receive
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID | INVALID_ORDER_STATUS
+        '404':
+          description: Not found, ORDER_NOT_FOUND 
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  /orders/{orderId}/address:
+    patch:
+      tags:
+        - Orders
+      summary: Update order's address (admin)
+      description: Allow admin to update order's address
+      operationId: updateOrderAddress
+      parameters:
+        - name: orderId
+          in: path
+          type: string
+          required: true
+          explode: true
+          example: '6557a3975b9d4f8135ac00fb'
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        description: Status to update, must be in ['to-pay', 'to-confirm', 'to-ship', 'to-receive', 'completed', 'canceled']
+        content:
+          application/json:
+            schema:
+              properties:
+                address:
+                  $ref: '#/components/schemas/Addresses'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:        
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request, INVALID_PARAMS_ID | INVALID_PHONE | INVALID_NAME | INVALID_ADDRESS
+        '404':
+          description: Not found, ORDER_NOT_FOUND 
+        '500':
+          description: Internal server error, SERVER_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'    
+  
 
    
 

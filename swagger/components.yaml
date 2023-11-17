@@ -516,6 +516,167 @@ components:
                 type: number
                 example: 600000
 
+    ProductOrder:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+          example: 65468e941a2f9e813c9004aa
+        name:
+          type: string
+          example: Samsung A12
+        slug: 
+          type: string
+          example: samsung-a12-65468e941a2f9e813c9004aa
+        quantity:
+          type: number
+          example: 1
+        variation:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: ObjectID
+              example: 65468e941a2f9e813c9004ac
+            name:
+              type: string
+              example: Dung lượng 256GB
+            price:
+              type: number
+              example: 2400000
+    StatusHistory:
+      type: object
+      properties:
+        _id: 
+          type: string
+          format: objectId
+          example: 6557a3985b9d4f8135ac0101
+        date:
+          type: date
+          example: 2023-11-17T17:30:41.767Z
+        status:
+          type: string
+          enum:
+            - to-pay
+            - to-confirm
+            - to-ship
+            - to-receive
+            - completed
+            - canceled
+          example: to-confirm
+    ShippingHistory:
+      type: object
+      properties:
+        _id: 
+          type: string
+          format: objectId
+          example: 6557a3985b9d4f8135ac0101
+        date:
+          type: date
+          example: 2023-11-17T17:30:41.767Z
+        description:
+          type: string
+          example: Đơn hàng đã xuất kho
+    CodeOrders:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: objectId
+                example: 653e8a9e14512ee30a5c0137
+              variationId:
+                type: string
+                format: objectId
+                example: 653e8a9e14512ee30a5c0138
+              quantity:
+                type: number
+                example: 1
+    Orders:
+      type: object
+      properties:
+        _id: 
+          type: string
+          format: objectId
+          example: 6557a3985b9d4f8135ac00ff
+        userId: 
+          type: string
+          format: objectId
+          example: 6530fb27ee98ba62f7728d71
+        shop: 
+          type: object
+          properties:
+            _id:
+              type: string
+              format: ObjectID
+              example: 653943fedb39b5fd654738d3
+            name:
+              type: string
+              example: jiken.com.vn
+        address:
+          $ref: '#/components/schemas/Addresses'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductOrder'
+        shippingCost:
+          type: number
+          example: 20000
+        totalPrice: 
+          type: number
+          example: 2420000
+        orderNumber:
+          type: string
+          example: 6557a3985b9d4f8135ac00ff
+        status:
+          type: string
+          enum:
+            - to-pay
+            - to-confirm
+            - to-ship
+            - to-recive
+            - completed
+            - canceled
+          example: to-confirm
+        statusHistory:
+          type: array
+          items: 
+            $ref: '#/components/schemas/StatusHistory'
+        shippingHistory:
+          type: array
+          items: 
+            $ref: '#/components/schemas/ShippingHistory'
+    AddOrders:
+      type: object
+      properties:
+        shop: 
+          type: object
+          properties:
+            _id:
+              type: string
+              format: ObjectID
+              example: 653943fedb39b5fd654738d3
+            name:
+              type: string
+              example: jiken.com.vn
+        address:
+          $ref: '#/components/schemas/Addresses'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductOrder'
+        shippingCost:
+          type: number
+          example: 20000
+        totalPrice: 
+          type: number
+          example: 2420000
+
     # data
     LoginData:
       type: object

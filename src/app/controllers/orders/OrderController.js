@@ -50,7 +50,7 @@ class OrderController{
         }
     }
 
-    //GET /api/orders/checkout?products=_id:quantity
+    //GET /api/orders/checkout?code
     async checkout(req, res, next){
         const userId = req.user._id
         const addressId = req.query.addressId
@@ -84,7 +84,7 @@ class OrderController{
                 if (!InputValidator.validateId(product._id) || !InputValidator.validateId(product.variationId) || typeof product.quantity !== 'number' || product.quantity <= 0) throw ErrorCodeManager.INVALID_CHECKOUT_PRODUCTS
             }
 
-            const code = tokenSerice.generateToken(products)
+            const code = tokenSerice.generateToken(products, '30m')
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('')
@@ -137,7 +137,8 @@ class OrderController{
             const address = user.addresses.id(addressId)
             if (!address) throw ErrorCodeManager.ADDRESS_NOT_FOUND
 
-            const order = await Orders.findOne({_id, userId})
+            const order = await Orders.findOne({_id, userId})   
+            if (!order) throw ErrorCodeManager.ORDER_NOT_FOUND
             if (!['to-pay', 'to-confirm'].includes(order.status)) throw ErrorCodeManager.ORDER_CANT_BE_CHANGED
 
 
@@ -160,6 +161,7 @@ class OrderController{
         try {
             if (!InputValidator.validateId(_id)) throw ErrorCodeManager.INVALID_PARAMS_ID
             const order = await Orders.findOne({_id, userId})
+            if (!order) throw ErrorCodeManager.ORDER_NOT_FOUND
             if (!['to-pay', 'to-confirm'].includes(order.status)) throw ErrorCodeManager.ORDER_CANT_BE_CHANGED
 
 
