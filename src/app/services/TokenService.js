@@ -10,6 +10,19 @@ class TokenService{
         return jwt.sign({user}, this.secretKey, {expiresIn})
     }
 
+    generateToken(data, expiresIn = '7d'){
+        return jwt.sign({data}, this.secretKey, {expiresIn})
+    }
+
+    decodeToken(token){
+        try {
+            return jwt.verify(token, this.secretKey);
+        } catch (error) {
+            return null;
+        }
+    }
+
+
     decodeAccessToken(token){
         try {
             return jwt.verify(token, this.secretKey);

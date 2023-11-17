@@ -37,7 +37,14 @@ class ErrorCodeManager{
     static get INVALID_CART_VARIATION_ID() {return new CustomError('INVALID_CART_BODY', 400, "VariationId is invalid, id is required and format Mongodb ObjectId is required")}
     static get MISSING_VARIATION_ID() {return new CustomError('MISSING_VARIATION_ID', 400, "Variation Id is required")}
     static get INVALID_UPDATED_CART_QUANTITY() {return new CustomError('INVALID_UPDATED_CART_QUANTITY', 400, "Quantity to update cart is invalid, required and must be number")}
-    
+    static get INVALID_CHECKOUT_PRODUCTS() {return new CustomError('INVALID_CHECKOUT_PRODUCTS', 400, "Checkout products body is invalid, require Mongodb Id for _id and variationId, quantity > 0")} 
+    static get INVALID_ORDER() {return new CustomError('INVALID_ORDER', 400, "Order is invalid")}
+    static get INVALID_ORDER_ADDRESS() {return new CustomError('INVALID_ORDER_ADDRESS', 400, "Order's address is missing or invalid")}
+    static get INVALID_ORDER_SHOP() {return new CustomError('INVALID_ORDER_SHOP', 400, "Order's shop info is missing or invalid")}
+    static get INVALID_ORDER_PRODUCT() {return new CustomError('INVALID_ORDER_PRODUCT', 400, "Order's product info is missing or invalid")}
+    static get INVALID_ORDER_SHIPPING_COST() {return new CustomError('INVALID_ORDER_SHIPPING_COST', 400, "Order's shipping cost is missing or invalid")}
+    static get INVALID_ORDER_TOTAL_PRICE() {return new CustomError('INVALID_ORDER_TOTAL_PRICE', 400, "Order's total priceis missing or invalid")}
+    static get INVALID_ORDER_STATUS() {return new CustomError('INVALID_ORDER_STATUS', 400, "Order's status is invalid")}
 
     //unauthorized
     static get UNAUTHORIZED() {return new CustomError('UNAUTHORIZED', 401, "UNAUTHORIZED")}
@@ -45,6 +52,7 @@ class ErrorCodeManager{
     //forbidden
     static get ACCOUNT_PENDING_DELETE() {return new CustomError('ACCOUNT_PENDING_DELETE', 403, "Account is pending to delete")}
     static get EMAIL_NOT_VERIFIED() {return new CustomError('EMAIL_NOT_VERIFIED', 403, "Email require to verify")}
+    static get ORDER_CANT_BE_CHANGED() {return new CustomError('ORDER_CANT_BE_CHANGED', 403, "Current order status does's allow to make change")}
     
     //not found
     static get EMAIL_NOT_FOUND() {return new CustomError('EMAIL_NOT_FOUND', 404, "Email not found") }
@@ -57,6 +65,7 @@ class ErrorCodeManager{
     static get VARIATION_NOT_FOUND() {return new CustomError('VARIATION_NOT_FOUND', 404, "Product's variation not found") }
     static get CART_NOT_FOUND() {return new CustomError('CART_NOT_FOUND', 404, "Cart not found") }
     static get CART_ITEM_NOT_FOUND() {return new CustomError('CART_ITEM_NOT_FOUND', 404, "Cart item not found") }
+    static get ORDER_NOT_FOUND() {return new CustomError('ORDER_NOT_FOUND', 404, "Order not found") }
 
     //conflict
     static get EMAIL_ALREADY_EXISTS() {return new CustomError('EMAIL_ALREADY_EXISTS', 409, "Email already exist") }

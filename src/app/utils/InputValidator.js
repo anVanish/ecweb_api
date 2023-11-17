@@ -29,6 +29,35 @@ const productJoi = joi.object({
     }).required(),
 }).options({ allowUnknown: true })
 
+const orderJoi = joi.object({
+    address: joi.object({
+        _id: joi.string().hex().length(24).required(),
+        name: joi.string().required(),
+        phone: joi.string().required(),
+        city: joi.string().required(),
+        district: joi.string().required(),
+        ward: joi.string().required(),
+        detail: joi.string().required(),
+    }).required(),
+    shop: joi.object({
+        _id: joi.string().hex().length(24).required(),
+        name: joi.string().required(),
+    }).required(),
+    products: joi.array().items(joi.object({
+        _id: joi.string().hex().length(24).required(),
+        name: joi.string().required(),
+        slug: joi.string().required(),
+        variation: joi.object({
+            _id: joi.string().hex().length(24).required(),
+            name: joi.string().required(),
+            price: joi.number().min(1000).required(),
+        }),
+        quantity: joi.number().min(1).required(),
+    })).required(),
+    shippingCost: joi.number().min(0).required(),
+    totalPrice: joi.number().min(0).required(),
+})
+
 class InputValidator{}  
 InputValidator.validateId = (id) => {
     return objectIdRegex.test(id)
@@ -129,12 +158,30 @@ InputValidator.invalidProduct = (product) => {
     if (path === 'length') return ErrorCodeManager.INVALID_PRODUCT_LENGTH
     if (path === 'height') return ErrorCodeManager.INVALID_PRODUCT_HEIGHT
 
-    return result.error.details
+    return null
 }
 
 InputValidator.invalidCartItem = (cart) => {
     if (!InputValidator.validateId(cart.productId)) return ErrorCodeManager.INVALID_CART_PRODUCT_ID
     if (!InputValidator.validateId(cart.variationId)) return ErrorCodeManager.INVALID_CART_VARIATION_ID
+    return null
+}
+
+InputValidator.invalidOrder = (order) => {
+    if (!order) return ErrorCodeManager.INVALID_ORDER
+    const result = orderJoi.validate(order)
+    if (!result.error) return null
+    
+    const paths = result.error.details[0].path
+    const path = paths[paths.length - 1]
+    console.log(result.error.details)
+
+    if (paths.includes('address')) return ErrorCodeManager.INVALID_ORDER_ADDRESS
+    if (paths.includes('shop')) return ErrorCodeManager.INVALID_ORDER_SHOP
+    if (paths.includes('products')) return ErrorCodeManager.INVALID_ORDER_PRODUCT
+    if (path === 'shippingCost') return ErrorCodeManager.INVALID_ORDER_SHIPPING_COST
+    if (path === 'totalPrice') return ErrorCodeManager.INVALID_ORDER_TOTAL_PRICE
+
     return null
 }
 
