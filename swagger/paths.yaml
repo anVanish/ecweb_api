@@ -2716,6 +2716,10 @@ paths:
           application/json:
             schema:
               properties:
+                addressId:
+                  type: string
+                  format: objectId
+                  example: 6538c4e2cc978c2ebaba4efb
                 orders:
                   type: array
                   items: 
@@ -2753,14 +2757,6 @@ paths:
           description: checkout code, use post action to get this code
           in: query
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjpbeyJfaWQiOiI2NTNlOGE5ZTE0NTEyZWUzMGE1YzAxMzciLCJ2YXJpYXRpb25JZCI6IjY1M2U4YTllMTQ1MTJlZTMwYTVjMDEzOCIsInF1YW50aXR5IjoyfSx7Il9pZCI6IjY1NDY4ZTk0MWEyZjllODEzYzkwMDRhYSIsInZhcmlhdGlvbklkIjoiNjU0NjhlOTQxYTJmOWU4MTNjOTAwNGFjIiwicXVhbnRpdHkiOjJ9XSwiaWF0IjoxNjk5NzQwMzY0LCJleHAiOjE3MDAzNDUxNjR9.OP16iaxAasf_FOM8pgKhsCQwQgUlCQvN5jlvi9yeoBY'
-        
-        - name: addressId
-          type: string
-          required: true
-          explode: true
-          description: Id of user's address
-          in: query
-          example: '6538c4e2cc978c2ebaba4efb'
         
       security:
         - BearerAuth: []

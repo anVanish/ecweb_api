@@ -53,22 +53,18 @@ class OrderController{
     //GET /api/orders/checkout?code
     async checkout(req, res, next){
         const userId = req.user._id
-        const addressId = req.query.addressId
         const code = req.query.code
 
         try{
-            if (!InputValidator.validateId(addressId)) throw ErrorCodeManager.ADDRESS_NOT_FOUND
             const user = await Users.findOneUsers({_id: userId})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
-            const address = user.addresses.id(addressId)
-            if (!address) throw ErrorCodeManager.ADDRESS_NOT_FOUND
 
             const decoded = tokenSerice.decodeToken(code)
             if (!decoded) throw ErrorCodeManager.INVALID_CODE
             const products = decoded.data
 
             const shopMaps = await getShopProductsMap(products)
-            const orders = await getOrders(shopMaps, address)
+            const orders = await getOrders(shopMaps)
 
             res.json(orders)
         } catch(error) {
@@ -99,10 +95,21 @@ class OrderController{
     //POST /api/orders/me
     async addMyOrder(req, res, next){
         const orders = req.body.orders
+        const addressId = req.body.addressId
         const userId = req.user._id
         try {
             if (!orders || !Array.isArray(orders) || orders.length <= 0) throw ErrorCodeManager.INVALID_ORDER
+            
+            const user = await Users.findOne({_id: userId})
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            const address = user.addresses.id(addressId)
+            if (!address) throw ErrorCodeManager.ADDRESS_NOT_FOUND
+            
+            const orderAddr = address.toObject()
+            orderAddr._id = orderAddr._id.toString()
+
             for (const orderItem of orders){
+                orderItem.address = orderAddr
                 const error = InputValidator.invalidOrder(orderItem)
                 if (error) throw error
 
@@ -200,11 +207,10 @@ async function getShopProductsMap(products){
     return shopMaps
 }
 
-async function getOrders(shopMaps, address){
+async function getOrders(shopMaps){
     const orders = []
     for (const [shopId, productOrders] of shopMaps){
         const order = {
-            address,
             products: [],
             shippingCost: 20000,
             totalPrice: 0,

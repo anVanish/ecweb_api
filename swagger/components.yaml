@@ -664,8 +664,6 @@ components:
             name:
               type: string
               example: jiken.com.vn
-        address:
-          $ref: '#/components/schemas/Addresses'
         products:
           type: array
           items:
