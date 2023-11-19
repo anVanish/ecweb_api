@@ -64,11 +64,12 @@ class OrderController{
             const products = decoded.data
 
             const shopMaps = await getShopProductsMap(products)
-            const orders = await getOrders(shopMaps)
+            const {orders, total} = await getOrders(shopMaps)
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('')
             apiResponse.data.orders = orders
+            apiResponse.data.total = total
             res.json(apiResponse)
         } catch(error) {
             next(error)
@@ -212,6 +213,7 @@ async function getShopProductsMap(products){
 
 async function getOrders(shopMaps){
     const orders = []
+    let total = 0
     for (const [shopId, productOrders] of shopMaps){
         const order = {
             products: [],
@@ -230,9 +232,10 @@ async function getOrders(shopMaps){
 
         order.shop = {_id: shop._id, name: shop.name}
 
+        total += order.totalPrice
         orders.push(order)
     }
-    return orders
+    return {orders, total}
 }
 
 module.exports = new OrderController()
