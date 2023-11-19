@@ -66,7 +66,10 @@ class OrderController{
             const shopMaps = await getShopProductsMap(products)
             const orders = await getOrders(shopMaps)
 
-            res.json(orders)
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess('')
+            apiResponse.data.orders = orders
+            res.json(apiResponse)
         } catch(error) {
             next(error)
         }
