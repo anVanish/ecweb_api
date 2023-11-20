@@ -3,7 +3,7 @@ const morgan = require('morgan')
 const route = require('./routes')
 const db = require('./config/db')
 const NotFoundError = require('./middlewares/notFoundHandling')
-const modifyCors = require('./middlewares/ModifyCors')
+const handleCors = require('./middlewares/handleCors')
 const dotenv = require('dotenv')
 const errorHandling = require('./middlewares/errorHandling')
 
@@ -14,7 +14,7 @@ const port = 3001
 
 db.connect()
 //middlewares
-app.use(modifyCors);
+app.use(handleCors);
 app.use(morgan('combined'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
