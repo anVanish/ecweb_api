@@ -13,7 +13,7 @@ class ApiResponse{
         this.errorCode = errorCode
     }
 
-    setSuccess(message){
+    setSuccess(message=''){
         this.success = true
         this.message = message
     }

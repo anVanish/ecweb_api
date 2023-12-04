@@ -7,75 +7,78 @@ const ProfileResponse = require('../../utils/responses/ProfileResponse')
 
 class ProfileController{
     //GET /api/users/me
-    getProfile(req, res, next){
-        const _id = req.user._id
-        Users.findOneUsers({_id}, {addPending: true})
-        .then((user) => {
+    async getProfile(req, res, next){
+        try{
+            const _id = req.user._id
+
+            const user = await Users.findOneUsers({_id}, {addPending: true})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
             if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
 
             const apiResponse = new ApiResponse()
-            apiResponse.success = true
+            apiResponse.setSuccess()
             apiResponse.data.user = new ProfileResponse(user)
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        
+        }catch(error){
             next(error)
-        })
+        }
+        
     }
 
     //PATCH /api/users/me
-    updateProfile(req, res, next){
-        const _id = req.user._id
-        const errorCode = InputValidator.invalidUser(req.body)
-        if (errorCode) return next(errorCode)
-
-        Users.findOneAndUpdateUsers({_id}, new ProfileResponse(req.body), {new: true, addPending: true})
-        .then((updatedUser) => {
-            if (!updatedUser) throw ErrorCodeManager.USER_NOT_FOUND
-            if (updatedUser.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+    async updateProfile(req, res, next){
+        try{
+            const _id = req.user._id
+            const errorCode = InputValidator.invalidUser(req.body)
+            if (errorCode) return next(errorCode)
+    
+            const user = await Users.findOneAndUpdateUsers({_id}, new ProfileResponse(req.body), {new: true, addPending: true})
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            if (user.isDeleted) throw ErrorCodeManager.ACCOUNT_PENDING_DELETE
+            
             const apiResponse = new ApiResponse()
-            apiResponse.success = true
-            apiResponse.data.user = new ProfileResponse(updatedUser)
+            apiResponse.setSuccess('Profile updated')
+            apiResponse.data.user = new ProfileResponse(user)
             res.json(apiResponse)
-        })
-        .catch((error) => {
-            next(error)
-        })
+        }catch(error){
+            next(error)    
+        }
+        
     }
 
     //DELETE /api/users/me
-    deleteAccount(req, res, next){
-        const _id = req.user._id
+    async deleteAccount(req, res, next){
+        try{
+            const _id = req.user._id
 
-        Users.deleteUsersById(_id, {new: true})
-        .then((updatedUser) => {
-            if (!updatedUser) throw ErrorCodeManager.USER_NOT_FOUND
+            const user = await Users.deleteUsersById(_id, {new: true})
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Account deleted')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
+        
     }
     
     //PATCH /api/users/me/restore
-    restoreAccount(req, res, next){
-        const _id = req.user._id
+    async restoreAccount(req, res, next){
+        try{
+            const _id = req.user._id
 
-        Users.findOneAndRestoreUsers({_id}, {new: true, pending: true})
-        .then((user)=>{
+            const user = await Users.findOneAndRestoreUsers({_id}, {new: true, pending: true})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+            
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Account restored')
             res.json(apiResponse)
-        })
-        .catch((error)=>{
+        }catch(error){
             next(error)
-        })
+        }
     }
-    
 }
 
 module.exports = new ProfileController()

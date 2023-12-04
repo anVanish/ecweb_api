@@ -46,110 +46,111 @@ class UserController{
     }
 
     //GET /api/users/:userId
-    detailUser(req, res, next){
+    async detailUser(req, res, next){
         const userId = req.params.userId
-        Users.findOne({_id: userId})
-        .then((user) => {
+        try{
+            const user = await Users.findOne({_id: userId})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
             const apiResponse = new ApiResponse()
-            apiResponse.success = true
+            apiResponse.setSuccess()
             apiResponse.data.user = user
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 
     //POST /api/users
-    addUser(req, res, next){
-        const errorRequired = InputValidator.invalidAuth(req.body)
-        if (errorRequired) return next(errorRequired)
-        const errorInput = InputValidator.invalidUser(req.body)
-        if (errorInput) return next(errorInput)
-
-        const {email} = req.body
-        Users.findOne({email})
-        .then((foundUser) => {
-            if (foundUser) throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
+    async addUser(req, res, next){
+        try{
+            const errorRequired = InputValidator.invalidAuth(req.body)
+            if (errorRequired) throw errorRequired
+            const errorInput = InputValidator.invalidUser(req.body)
+            if (errorInput) throw errorInput
+    
+            const {email} = req.body
+            const existUser = await Users.findOne({email})
+            if (existUser) throw ErrorCodeManager.EMAIL_ALREADY_EXISTS
+            
             const user = new Users(req.body)
-            return user.save()
-        })
-        .then((savedUser) => {
+            await user.save()
+            
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('Add user successfully')
+            apiResponse.setSuccess('User added')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        } catch(error){
             next(error)
-        })
+        }
+        
     }
 
     //PATCH /api/users/:userId
-    updateUser(req, res, next){
-        const _id = req.params.userId
-        if (!_id) return next(ErrorCodeManager.MISSING_ID, 'User Id is required')
-        const errorInput = InputValidator.invalidUser(req.body)
-        if (errorInput) return ErrorHandling.handleErrorResponse(errorInput)
-
-        Users.findByIdAndUpdate(_id, req.body, {new: true})
-        .then((user) => {
+    async updateUser(req, res, next){
+        try{
+            const _id = req.params.userId
+            if (!_id) throw ErrorCodeManager.MISSING_ID, 'User Id is required'
+            const errorInput = InputValidator.invalidUser(req.body)
+            if (errorInput) throw errorInput
+    
+            const user = await Users.findByIdAndUpdate(_id, req.body, {new: true})
             if (!user) throw next(ErrorCodeManager.USER_NOT_FOUND)
 
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('Update successfully')
+            apiResponse.setSuccess('User updated')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
+        
     }
 
     //DELETE /api/users/:userId
-    deleteUser(req, res, next){
-        const _id = req.params.userId
-        if (!_id) return next(ErrorCodeManager.MISSING_ID, 'User Id is required')
-        
-        Users.deleteUsersById(_id, {new: true})
-        .then((user) => {
+    async deleteUser(req, res, next){
+        try{
+            const _id = req.params.userId
+            if (!_id) throw ErrorCodeManager.MISSING_ID
+            
+            const user = await Users.deleteUsersById(_id, {new: true})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('User deleted')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
+        
     }
 
     //PATCH /api/users/:userId/restore
-    restoreUser(req, res, next){
-        const _id = req.params.userId
-        Users.findOneAndRestoreUsers({_id}, {deleted: true, new: true})
-        .then((user) => {
+    async restoreUser(req, res, next){
+        try{
+            const _id = req.params.userId
+            const user = await Users.findOneAndRestoreUsers({_id}, {deleted: true, new: true})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
             
             const apiResponse = new ApiResponse();
             apiResponse.setSuccess('User restored')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
+        
     }
 
     //DELETE /api/users/:userId/force
-    forceDeleteUser(req, res, next){
-        const _id = req.params.userId
-        Users.findByIdAndDelete(_id)
-        .then((user) => {
+    async forceDeleteUser(req, res, next){
+        try{
+            const _id = req.params.userId
+            const user = await Users.findByIdAndDelete(_id)
             if(!user) throw ErrorCodeManager.USER_NOT_FOUND
+
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('User force deleted') 
             res.json(apiResponse)
-        })
-        .catch((error) => next(error))
+        }catch(error){
+            next(error)
+        }
     }
 }
 

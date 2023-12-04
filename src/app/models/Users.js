@@ -19,7 +19,6 @@ const Users = new Schema({
     isSeller: {type: Boolean, default: false},
     isAdmin: {type: Boolean, default: false},
     isDeleted: {type: Boolean},
-    createdAt: {type: Date, default: new Date()},
     deletedAt: {type: Date},
 }, {
     timestamps: true,

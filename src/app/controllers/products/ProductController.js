@@ -27,22 +27,21 @@ class ProductController{
     }
 
     //GET /api/products/:slug
-    detailProduct(req, res, next){
-        const all = (req.query.all === 'true')
-        const slug = req.params.slug
-        Products.findOneProducts({slug}, {all})
-        .populate('shopId', 'name follower')
-        .then((product) => {
+    async detailProduct(req, res, next){
+        try{
+            const all = (req.query.all === 'true')
+            const slug = req.params.slug
+            const product = await Products.findOneProducts({slug}, {all})
+            .populate('shopId', 'name follower')
             if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('')
             apiResponse.data.product = product
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 }
 

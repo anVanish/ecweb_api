@@ -73,38 +73,37 @@ class AdminShopController{
     }
 
     //PATCH /api/shops/:shopId
-    updateShop(req, res, next){
-        const _id = req.params.shopId
-        const error = InputValidator.invalidShop(req.body, {create: false})
-        if (error) return next(error)
-        
-        const {sellerId, ...other} = req.body
-
-        Shops.findOneAndUpdate({_id}, other, {new: true})
-        .then((shop) => {
+    async updateShop(req, res, next){
+        try{
+            const _id = req.params.shopId
+            const error = InputValidator.invalidShop(req.body, {create: false})
+            if (error) return next(error)
+            
+            const {sellerId, ...other} = req.body
+            const shop = await Shops.findOneAndUpdate({_id}, other, {new: true})
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Shop updated')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 
     //DELETE /api/shops/:shopId
-    deleteShop(req, res, next){
-        const _id = req.params.shopId
-        Shops.findOneAndDelete({ _id})
-        .then((shop) => {
+    async deleteShop(req, res, next){
+        try{
+            const _id = req.params.shopId
+            const shop = await Shops.findOneAndDelete({ _id})
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Shop deleted')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 }
 

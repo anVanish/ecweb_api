@@ -8,19 +8,19 @@ const {filterProducts} = require('../../utils/SearchFilters')
 class ShopController{
     //no authentication
     //GET /api/shops/:shopId
-    detailShop(req, res, next){
-        const _id = req.params.shopId
-        Shops.findOne({_id})
-        .then((shop) => {
+    async detailShop(req, res, next){
+        try{
+            const _id = req.params.shopId
+            const shop = await Shops.findOne({_id})
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('')
+            apiResponse.setSuccess()
             apiResponse.data.shop = shop
             res.json(shop)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 
     //GET /api/shops/:shopId/products

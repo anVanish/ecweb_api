@@ -8,6 +8,7 @@ class ProfileResponse{
         if (user.phone) this.phone = user.phone
         if (user.birthday) this.birthday = user.birthday
         if (user.gender) this.gender = user.gender
+        if (user.addresses) this.addresses = user.addresses
     }
 }
 

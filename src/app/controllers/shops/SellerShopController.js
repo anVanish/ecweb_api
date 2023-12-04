@@ -9,20 +9,19 @@ const ProfileResponse = require('../../utils/responses/ProfileResponse')
 class SellerShopController{
     //seller authentication
     //GET /api/shops/me/products
-    getMyShop(req, res, next){
-        const _id = req.user._id
-        Shops.findOne({sellerId: _id})
-        .then((shop) => {
+    async getMyShop(req, res, next){
+        try{
+            const _id = req.user._id
+            const shop = await Shops.findOne({sellerId: _id})
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
 
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('')
             apiResponse.data.shop = shop
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 
     //GET /api/shops/me/products
@@ -82,36 +81,37 @@ class SellerShopController{
     }
 
     //PATCH /api/shops/me
-    updateMyShop(req, res, next){
-        const {_id} = req.user
-        const error = InputValidator.invalidShop(req.body, {create: false})
-        if (error) return next(error)
-
-        Shops.findOneAndUpdate({sellerId: _id}, req.body, {new: true})
-        .then((shop) => {
+    async updateMyShop(req, res, next){
+        try{
+            const {_id} = req.user
+            const error = InputValidator.invalidShop(req.body, {create: false})
+            if (error) return next(error)
+    
+            const shop = await Shops.findOneAndUpdate({sellerId: _id}, req.body, {new: true})
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Shop updated')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
     }
 
     //DELETE /api/shops/me
-    deleteMyShop(req, res, next){
-        const {_id} = req.user
-        Shops.findOneAndDelete({sellerId: _id})
-        .then((shop) => {
+    async deleteMyShop(req, res, next){
+        try{
+            const {_id} = req.user
+            const shop = await Shops.findOneAndDelete({sellerId: _id})
             if (!shop) throw ErrorCodeManager.SHOP_NOT_FOUND
+            
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Shop deleted')
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
+       
     }
 }
 

@@ -6,19 +6,20 @@ const Users = require("../../models/Users")
 class AddressController{
     //my address
     //GET /api/users/me/addresses
-    getMyAddresses(req, res, next){
-        const _id = req.user._id
-        Users.findOneUsers({_id})
-        .then((user)=>{
+    async getMyAddresses(req, res, next){
+        try{
+            const _id = req.user._id
+            const user = await Users.findOneUsers({_id})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+
             const apiResponse = new ApiResponse()
-            apiResponse.setSuccess('')
+            apiResponse.setSuccess()
             apiResponse.data.addresses = user.addresses
             res.json(apiResponse)
-        })
-        .catch((error) => {
+        }catch(error){
             next(error)
-        })
+        }
+        
     }
     
     //GET /api/addresses/:addressId/me
