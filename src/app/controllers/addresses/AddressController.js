@@ -4,7 +4,6 @@ const InputValidator = require("../../utils/InputValidator")
 const Users = require("../../models/Users")
 
 class AddressController{
-    //my address
     //GET /api/users/me/addresses
     async getMyAddresses(req, res, next){
         try{
@@ -33,7 +32,7 @@ class AddressController{
             if (!addr) throw ErrorCodeManager.ADDRESS_NOT_FOUND
 
             const apiResponse = new ApiResponse()
-            apiResponse.success = true
+            apiResponse.setSuccess()
             apiResponse.data.address = addr
             res.json(apiResponse)
         }catch(error){
@@ -41,6 +40,29 @@ class AddressController{
         }
     }
     
+    //GET /api/addresses/default/me
+    async getMyDefaultAddress(req, res, next){
+        try{
+            const _id = req.user._id
+            const user = await Users.findOneUsers({_id})
+            if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+
+            let addr = user.addresses.find((address) => address.default === true)
+            if (!addr && user.addresses.length > 0){
+                user.addresses[0].default = true
+                addr = user.addresses[0]
+            }
+            if (!addr) throw ErrorCodeManager.ADDRESS_NOT_FOUND
+
+            const apiResponse = new ApiResponse()
+            apiResponse.setSuccess()
+            apiResponse.data.address = addr
+            res.json(apiResponse)
+        }catch(error){
+            next(error)
+        }
+    }
+
     //POST /api/users/me/addresses
     async addMyAddress(req, res, next){
         try{
@@ -50,6 +72,14 @@ class AddressController{
     
             const user = await Users.findOneUsers({_id})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
+
+            
+            if (!user.addresses || user.addresses.length === 0) {
+                req.body.default = true
+            } else if (req.body.default) {
+                user.addresses.forEach((address) => address.default = false)
+            }
+
             user.addresses.push(req.body)
             await user.save()
             
@@ -74,7 +104,12 @@ class AddressController{
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
             const addr = user.addresses.id(addressId)
             if (!addr) throw ErrorCodeManager.ADDRESS_NOT_FOUND
-            
+
+            if (user.addresses.length === 1 && !req.body.default) 
+                throw ErrorCodeManager.ADDRESS_MUST_HAVE_DEFAULT
+            else if (req.body.default)
+                user.addresses.forEach((address) => address.default = false)
+
             Object.assign(addr, req.body)
             await user.save()
 
@@ -98,8 +133,9 @@ class AddressController{
             if (!addr) throw ErrorCodeManager.ADDRESS_NOT_FOUND
 
             user.addresses = user.addresses.filter((address) => address._id != addressId)
+            if (user.addresses.length > 0) user.addresses[0].default = true
             await user.save()
-            
+
             const apiResponse = new ApiResponse();
             apiResponse.setSuccess('Address deleted');
             res.json(apiResponse);

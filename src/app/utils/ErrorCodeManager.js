@@ -18,6 +18,7 @@ class ErrorCodeManager{
     static get INCORRECT_PASSWORD() {return new CustomError('INCORRECT_PASSWORD', 400, "Password is incorrect") }
     static get PASSWORD_CONFIRM_INCORRECT() {return new CustomError('PASSWORD_CONFIRM_INCORRECT', 400, "Confirmed password is not correct") }
     static get INVALID_ADDRESS() {return new CustomError('INVALID_ADDRESS', 400, "Address is Invalid")}
+    static get ADDRESS_MUST_HAVE_DEFAULT() {return new CustomError('ADDRESS_MUST_HAVE_DEFAULT', 400, "Your addresses must have default address")}
     static get MISSING_CATEGORY_NAME() {return new CustomError('MISSING_CATEGORY_NAME', 400, "Category name is required")}
     static get MISSING_CATEGORY_IMAGE() {return new CustomError('MISSING_CATEGORY_IMAGE', 400, "Category image is required")}
     static get MISSING_PRODUCT_NAME() {return new CustomError('MISSING_PRODUCT_NAME', 400, "Product name is required")}
@@ -45,6 +46,7 @@ class ErrorCodeManager{
     static get INVALID_ORDER_SHIPPING_COST() {return new CustomError('INVALID_ORDER_SHIPPING_COST', 400, "Order's shipping cost is missing or invalid")}
     static get INVALID_ORDER_TOTAL_PRICE() {return new CustomError('INVALID_ORDER_TOTAL_PRICE', 400, "Order's total priceis missing or invalid")}
     static get INVALID_ORDER_STATUS() {return new CustomError('INVALID_ORDER_STATUS', 400, "Order's status is invalid")}
+    
 
     //unauthorized
     static get UNAUTHORIZED() {return new CustomError('UNAUTHORIZED', 401, "UNAUTHORIZED")}

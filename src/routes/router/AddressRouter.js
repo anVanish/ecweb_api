@@ -9,14 +9,17 @@ const {authenticateUser, authenticateAdmin, authenticateToken} = require('../../
 router.use(authenticateToken)
 
 //profile
+router.get('/default/me', authenticateUser, addressController.getMyDefaultAddress)
 router.get('/:addressId/me', authenticateUser, addressController.getMyAddress)
 router.put('/:addressId/me', authenticateUser, addressController.updateMyAddress)
 router.delete('/:addressId/me', authenticateUser, addressController.deleteMyAddress)
 
 //admin
-router.get('/:addressId/:userId', authenticateAdmin, adminAddressController.getAddress)
-router.put('/:addressId/:userId', authenticateAdmin, adminAddressController.updateAddress)
-router.delete('/:addressId/:userId', authenticateAdmin, adminAddressController.deleteAddress)
+router.use(authenticateAdmin)
+router.get('/default/:userId', adminAddressController.getDefaultAddress)
+router.get('/:addressId/:userId', adminAddressController.getAddress)
+router.put('/:addressId/:userId', adminAddressController.updateAddress)
+router.delete('/:addressId/:userId', adminAddressController.deleteAddress)
 
 
 

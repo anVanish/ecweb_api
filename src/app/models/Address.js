@@ -8,6 +8,7 @@ const Address = new Schema({
     district: {type: String, required: true},
     ward: {type: String, required: true},
     detail: {type: String, required: true},
+    default: {type: Boolean, default: false}
 })
 
 module.exports = Address

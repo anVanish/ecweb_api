@@ -141,6 +141,9 @@ components:
         detail: 
           type: string
           example: so 62, duong 1A
+        default: 
+          type: boolean
+          example: false
     AddAddresses:
       type: object
       properties:
@@ -164,7 +167,9 @@ components:
         detail: 
           type: string
           example: so 62, duong 1A
-
+        default: 
+          type: boolean
+          example: false
     Shop:
       properties:
         _id:
