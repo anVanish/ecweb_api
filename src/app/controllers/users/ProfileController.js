@@ -60,8 +60,7 @@ class ProfileController{
             res.json(apiResponse)
         }catch(error){
             next(error)
-        }
-        
+        }   
     }
     
     //PATCH /api/users/me/restore

@@ -40,7 +40,7 @@ class SellerProductController{
             const error = InputValidator.invalidProduct(req.body)
             if (error) throw error
 
-            const product = Products.findOne({_id: productId})
+            const product = await Products.findOneAndUpdate({_id: productId}, req.body, {new: true})
             if (!product) throw ErrorCodeManager.PRODUCT_NOT_FOUND
 
             const apiResponse = new ApiResponse()
