@@ -174,7 +174,6 @@ InputValidator.invalidOrder = (order) => {
     
     const paths = result.error.details[0].path
     const path = paths[paths.length - 1]
-    console.log(paths)
     if (paths.includes('address')) return ErrorCodeManager.INVALID_ORDER_ADDRESS
     if (paths.includes('shop')) return ErrorCodeManager.INVALID_ORDER_SHOP
     if (paths.includes('products')) return ErrorCodeManager.INVALID_ORDER_PRODUCT
