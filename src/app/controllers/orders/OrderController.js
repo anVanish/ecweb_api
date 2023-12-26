@@ -8,6 +8,7 @@ const Users = require('../../models/Users')
 const tokenSerice = require('../../services/TokenService')
 const ProductOrder = require('../../utils/responses/ProductOrder')
 const { filterOrders } = require("../../utils/SearchFilters")
+const Carts = require("../../models/Carts")
 
 class OrderController{
     //GET /api/orders/me
@@ -104,14 +105,15 @@ class OrderController{
         try {
             if (!orders || !Array.isArray(orders) || orders.length <= 0) throw ErrorCodeManager.INVALID_ORDER
             
+
             const user = await Users.findOne({_id: userId})
             if (!user) throw ErrorCodeManager.USER_NOT_FOUND
             const address = user.addresses.id(addressId)
             if (!address) throw ErrorCodeManager.ADDRESS_NOT_FOUND
-            
+
             const orderAddr = address.toObject()
             orderAddr._id = orderAddr._id.toString()
-
+            
             for (const orderItem of orders){
                 orderItem.address = orderAddr
                 const error = InputValidator.invalidOrder(orderItem)
@@ -125,8 +127,19 @@ class OrderController{
                 order.userId = userId
                 await order.save()
             }
+
+            //delete from carts when order successfully
+            const cartIdsToDelete = orders.flatMap(order => order.products.map(product => ({
+                userId: userId,
+                productId: product._id,
+                variationId: product.variation._id
+            })))
+            await Carts.deleteMany({$or:cartIdsToDelete})
+
+
             const apiResponse = new ApiResponse()
             apiResponse.setSuccess('Order Successfully')
+            apiResponse.data.test = cartIdsToDelete
             res.json(apiResponse)
         } catch(error) {
             next(error)
